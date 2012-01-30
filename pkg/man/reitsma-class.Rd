@@ -57,7 +57,7 @@ The confidence regions of \code{ROCellipse} are first calculated as ellipses on 
 \code{sroc} a  matrix ready for plotting. Each row corresponds to one point in ROC space. \code{mcsroc} returns a \code{\link{lowess}} smooth. \code{ROCellipse} returns a list, the first element being a matrix of points in ROC space that delimit the confidence region and the second is the point estimate of the pair of sensitivity and false positive rate in ROC space.
 }
 \references{
-Doebler, P., Holling, H., B\"ohning, D. (2012) \dQuote{A Mixed Model Approach to Meta-Analysis of Diagnostic Studies with Binary Test Outcome.} \emph{Psychological Methods}, to appear
+Doebler, P., Holling, H., Boehning, D. (2012) \dQuote{A Mixed Model Approach to Meta-Analysis of Diagnostic Studies with Binary Test Outcome.} \emph{Psychological Methods}, to appear
 }
 \author{
 Philipp Doebler <philipp.doebler@googlemail.com>

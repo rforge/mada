@@ -7,7 +7,7 @@ Meta-Analysis of diagnostic accuracy studies
 mada
 }
 \description{
-This package provides functions for diagnostic meta-analysis. Next to basic analysis and visualization the bivariate Model of Reitsma et al. (2005) that is equivalent to the HSROC of Rutter&Gatsonis (2001) can be fitted. A new approach based to diagnostic meta-analysis of B\"ohning et al. is also availble. Many standard methods are also implemented.
+This package provides functions for diagnostic meta-analysis. Next to basic analysis and visualization the bivariate Model of Reitsma et al. (2005) that is equivalent to the HSROC of Rutter&Gatsonis (2001) can be fitted. A new approach based to diagnostic meta-analysis of Boehning et al. is also availble. Many standard methods are also implemented.
 }
 \details{
 \tabular{ll}{

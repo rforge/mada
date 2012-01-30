@@ -33,7 +33,7 @@ The \code{AuditC} data is from Kriston et al. (2008). The \code{Dementia} from M
 }
 
 \source{
-Kriston, L., H\"ozel, L., Weiser, A., Berner, M., & H\"arter, M. (2008).\dQuote{ Meta-analysis: Are 3
+Kriston, L., H\"ozel, L., Weiser, A., Berner, M., & Haerter, M. (2008).\dQuote{ Meta-analysis: Are 3
 Questions Enough to Detect Unhealthy Alcohol Use?} \emph{ Annals of Internal Medicine},
 \bold{149}, 879--888.
 

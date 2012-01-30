@@ -49,7 +49,7 @@ The SROC curve is derived from the model formula.  The confidence bands are calc
 \value{
 The \code{sroc} function returns a matrix ready for plotting.Each row corresponds to one point in ROC space.}
 \references{
-B\"ohning D., B\"ohning, W., Holling, H., Doebler, P. (2012) \dQuote{Meta-Analysis of Diagnostic Studies based upon SROC-Curves: a Mixed Model Approach using a Proportional Hazards Model.} \emph{submitted}
+Boehning D., Boehning, W., Holling, H., Doebler, P. (2012) \dQuote{Meta-Analysis of Diagnostic Studies based upon SROC-Curves: a Mixed Model Approach using a Proportional Hazards Model.} \emph{submitted}
 }
 
 \author{

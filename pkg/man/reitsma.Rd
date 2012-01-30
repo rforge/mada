@@ -46,7 +46,7 @@ measures in diagnostic reviews.} \emph{Journal of Clinical Epidemiology}, \bold{
 Harbord, R., Deeks, J., Egger, M., Whiting, P., & Sterne, J. (2007). \dQuote{A unification of
 models for meta-analysis of diagnostic accuracy studies.} \emph{Biostatistics}, \bold{8}, 239--251.
 
-Doebler, P., Holling, H., B\"ohning, D. (2012) \dQuote{A Mixed Model Approach to Meta-Analysis of Diagnostic Studies with Binary Test Outcome.} \emph{Psychological Methods}, to appear
+Doebler, P., Holling, H., Boehning, D. (2012) \dQuote{A Mixed Model Approach to Meta-Analysis of Diagnostic Studies with Binary Test Outcome.} \emph{Psychological Methods}, to appear
 }
 \author{
 Philipp Doebler <philipp.doebler@googlemail.com>
