@@ -1,7 +1,7 @@
 Package: mada
 Type: Package
 Title: Meta-Analysis of Diagnostic Accuracy (mada)
-Version: 1.0
+Version: 0.1
 Date: 2012-01-24
 Author: Philipp Doebler
 Maintainer: Philipp Doebler <philipp.doebler@googlemail.com>
