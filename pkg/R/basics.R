@@ -1,13 +1,92 @@
+# function of the class "descript"
+madaDescript <- function(x=NULL, TP, FN, FP, TN, level = 0.95, correction = 0.5, 
+                         correction.control = "all", method = "wilson", ...){
+  alpha<-1-level
+	kappa<-qnorm((1-alpha/2))
+  DNAME <- deparse(substitute(x))
+  if(!is.null(x)){
+    X <- as.data.frame(x)
+    origdata <- X
+    TP <- X$TP
+    FN <- X$FN
+    FP <- X$FP
+    TN <- X$TN
+  }
+  if(is.null(x)){origdata <- data.frame(TP = TP, FN = FN, FP = FP, TN = TN)}
+
+  checkdata(origdata)
+
+  ## apply continuity correction to _all_ studies if one contains zero
+  if(correction.control == "all"){if(any(c(TP,FN,FP,TN) == 0)){TP <- TP+correction;
+    					FN <- FN + correction;
+							FP <- FP + correction;
+							TN <- TN + correction}}
+  if(correction.control == "single"){
+	  correction = ((((TP == 0)|(FN == 0))|(FP == 0))| (TN == 0))*correction
+    TP <- correction + TP
+	  FN <- correction + FN
+	  FP <- correction + FP
+	  TN <- correction + TN
+	}
+  
+  
+  number.of.pos<-TP+FN
+  number.of.neg<-FP+TN
+  sens.ci<-binomCIvector(TP,number.of.pos, conf.level  = level, method = method)
+  spec.ci<-binomCIvector(TN,number.of.neg, conf.level  = level, method = method)
+  fpr.ci<-binomCIvector(FP,number.of.neg, conf.level  = level, method = method)
+
+  sens <- TP/number.of.pos
+  spec <- TN/number.of.neg
+  fpr <- FP/number.of.neg
+
+  cor_da <- cor(as.matrix(data.frame(sens = sens, spec = spec, fpr = fpr)))
+  
+	posLR<-sens/fpr
+	negLR<-(1-sens)/(1-fpr)
+	
+	se.lnposLR <- sqrt(1/TP + 1/FP - 1/number.of.pos - 1/number.of.neg)
+	se.lnnegLR <- sqrt(1/TN + 1/FN - 1/number.of.pos - 1/number.of.neg)
+	posLR.ci<-cbind(exp(-kappa*se.lnposLR),exp(kappa*se.lnposLR))
+	posLR.ci<-posLR*posLR.ci
+	negLR.ci<-cbind(exp(-kappa*se.lnnegLR),exp(kappa*se.lnnegLR))
+	negLR.ci<-negLR*negLR.ci
+	
+	DOR<-posLR/negLR
+  se.lnDOR<-sqrt(1/TP + 1/TN + 1/FN + 1/FP)
+	DOR.ci<-cbind(exp(-kappa*se.lnDOR),exp(kappa*se.lnDOR))
+	DOR.ci<-DOR*DOR.ci
+
+  output <- list(sens = list(sens = sens, sens.ci = sens.ci),
+                 spec = list(spec = spec, spec.ci = spec.ci),
+                 fpr = list(fpr = fpr, fpr.ci = fpr.ci),
+                 posLR = list(posLR = posLR, posLR.ci = posLR.ci),
+                 negLR = list(negLR = negLR, negLR.ci = negLR.ci),
+                 DOR = list(DOR = DOR, DOR.ci = DOR.ci),
+                 cor_sens_fpr = cor(sens,fpr),
+                 level = level, method = method,
+                 nobs = nrow(origdata), data = origdata, data.name = DNAME)
+  class(output) <- "madaDescript"
+  output
+}
+
+
+
+
+checkdata <- function(X, nrowwarn = 5){
+  X <- as.data.frame(X)
+  if(!all(c("TP","FN","FP","TN") %in% names(X))){
+    stop("Data frame or matrix must have columns labelled TP, FN, FP and TN.")}
+  if(!identical(round(X),X)){stop("Data must consist of counts.")}
+  if(nrow(X) < nrowwarn){warning("There are very few primary studies!")}
+  return(invisible(NULL))
+}
+
 sens <- function(x){x$TP/(x$TP + x$FN)}
 fpr <- function(x){x$FP/(x$FP + x$TN)}
+spec <- function(x){x$TN/(x$FP + x$TN)}
 
 
-
-# Given a Nx4 Matrix compute the Sen, Spe of each study, columns of the matrix are: TP, FN, FP, TN. Alternatively M can be a data frame consisting of 4 variables ordered correctly
-# Calculates FPR instead of Specificity if FPR=TRUE
-# Continuity Correction: Add 0.5 to all cells if one 0 cell is present
-# TODO: maybe implement a function that checks the sanity of the data and the sanity of the continuity correction
-#TODO: maybe implement other continuity corrections or even a function for corrections
 
 crosshair <- function(M, correction = 0.5, conf.level = 0.95, method = "wilson", pch = 1, add = FALSE, ...){
   x <- calc.SensSpec(M, FPR = TRUE, correction = correction, conf.level = conf.level, method = method)
@@ -36,91 +115,6 @@ ROC.ellipse <- function(M, correction = 0.5, conf.level = 0.95, method = "wilson
     }
   return(invisible(NULL))
 }
-
-calc.SensSpec<-function(M, FPR = FALSE, correction = 0.5, conf.level = 0.95, method = "wilson")
-{
-# convert M to matrix  if necessary
-M<-as.matrix(M)
-if(any(M == 0)){M<-M+correction}
-true.pos<-M[,1]
-false.neg<-M[,2]
-false.pos<-M[,3]
-true.neg<-M[,4]
-number.of.pos<-true.pos+false.neg
-number.of.neg<-false.pos+true.neg
-sens<-true.pos/number.of.pos
-sens.ci<-binomCIvector(true.pos,number.of.pos, conf.level  = conf.level, method = method)
-
-if(FPR==FALSE)
-{
-spec<-true.neg/number.of.neg
-spec.ci<-binomCIvector(true.neg,number.of.neg, conf.level  = conf.level, method = method)
-output<-cbind(sens,sens.ci,spec,spec.ci)
-colnames(output)<-c("sensitiviy","Se LL", "Se UL","specifity", "Sp LL", "Sp UL")
-return(output)
-}else
-FPR<-false.pos/number.of.neg
-FPR.ci<-binomCIvector(false.pos,number.of.neg, conf.level  = conf.level, method = method)
-output<-cbind(sens,sens.ci,FPR,FPR.ci)
-colnames(output)<-c("sensitiviy","Se LL", "Se UL","false positive rate", "FPR LL", "FPR UL")
-return(output)
-} # End of function calc.SensSpec
-
-
-# Calculate positive and negative Likelihood Ratios
-# Input as in calc.SensSpec
-# conf.level gives the level of the confidence intervalls
-calc.LR<-function(M, correction = 0.5, conf.level = 0.95)
-{
-	
-	SenFPR<-calc.SensSpec(M, FPR = TRUE, correction = correction)
-	posLR<-SenFPR[,1]/SenFPR[,4]
-	negLR<-(1-SenFPR[,1])/(1-SenFPR[,4])
-	
-	# now for the confidence intervals: use normal approx for log-transformed LR and well-known formula
-	true.pos<-M[,1]
-	false.neg<-M[,2]
-	false.pos<-M[,3]
-	true.neg<-M[,4]
-	number.of.pos<-true.pos+false.neg
-	number.of.neg<-false.pos+true.neg
-	se.lnposLR<-sqrt(1/true.pos+1/false.pos-1/number.of.pos-1/number.of.neg)
-	se.lnnegLR<-sqrt(1/true.neg+1/false.neg-1/number.of.pos-1/number.of.neg)
-	alpha<-1-conf.level
-	kappa<-qnorm((1-alpha/2))
-	posLR.ci<-cbind(exp(-kappa*se.lnposLR),exp(kappa*se.lnposLR))
-	posLR.ci<-posLR*posLR.ci
-	negLR.ci<-cbind(exp(-kappa*se.lnnegLR),exp(kappa*se.lnnegLR))
-	negLR.ci<-negLR*negLR.ci
-	
-	
-	output<-cbind(posLR, posLR.ci, negLR, negLR.ci)
-	colnames(output)<-c("pos LR", "pos LR LL", "pos LR UL", "neg LR", "neg LR LL", "neg LR UL")
-	return(output)
-} # End of function calc.LR
-
-# Calculate DOR
-# Input as in calc.SensSpec
-calc.DOR<-function(M, correction = 0.5, conf.level = 0.95)
-{
-	LR<-calc.LR(M, correction = correction)
-	DOR<-LR[,1]/LR[,4]
-
-	true.pos<-M[,1]
-	false.neg<-M[,2]
-	false.pos<-M[,3]
-	true.neg<-M[,4]
-
-	se.lnDOR<-sqrt(1/true.pos+1/true.neg+1/false.neg+1/false.pos)
-	alpha<-1-conf.level
-	kappa<-qnorm((1-alpha/2))
-	DOR.ci<-cbind(exp(-kappa*se.lnDOR),exp(kappa*se.lnDOR))
-	DOR.ci<-DOR*DOR.ci
-	
-	output<-cbind(DOR,DOR.ci)
-	colnames(output)<-c("DOR", "DOR LL", "DOR UL")
-	return(output)
-} # End of function calc.DOR
 
 
 
@@ -280,20 +274,6 @@ binomCIvector<-function(x, n, conf.level = 0.95, method="wilson"){
 ############################
 # Naive Homogeneity checks #
 ############################
-
-# Naively check for cut-off value problem by Spearman's rho
-# For this calculate the correlation between observed Sens and Spe or Sens and FPR
-# method is passed on to cor()
-
-naive.cor<-function(M, method="spearman", correction = 0.5, FPR = FALSE)
-{
-	SensSpec<-calc.SensSpec(M, FPR = FPR, correction = correction, conf.level = 0.95, method = "wilson")
-	Sens<-SensSpec[,1]
-	SpecFPR<-SensSpec[,4]
-	output<-cor(Sens, SpecFPR, method = method)
-	names(output)<-paste(c("Correlation of sensitivity and "),ifelse(FPR, "false positive rate", "specificity"),collapse="")
-	return(output)
-}
 
 # Naively test for equality of proportions using R's prop.test
 naive.prop.test<-function(M, conf.level = 0.95, correct = TRUE){

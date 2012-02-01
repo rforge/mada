@@ -2,7 +2,7 @@ phm <- function(x, ...)UseMethod("phm")
 
 phm.default <- function(x=NULL, TP, FN, FP, TN, 
                         correction = 0.5, correction.control = "all", 
-                        hetero = TRUE, estimator = "APMLE", l = 100, ...){
+                        hetero = TRUE, estimator = "APMLE", l = 100, ...){  
   if(estimator == "APMLE"){estimator <- "Adjusted Profile Maximum Likelihood"}
   DNAME <- deparse(substitute(x))
   if(!is.null(x)){
@@ -15,8 +15,8 @@ phm.default <- function(x=NULL, TP, FN, FP, TN,
   }
   if(is.null(x)){origdata <- data.frame(TP = TP, FN = FN, FP = FP, TN = TN)}
 
-  stopifnot(round(TP) == TP, round(FN) == FN, round(FP) == FP, round(TN) == TN)
-
+  checkdata(origdata)
+  
   k <- length(TP)  
 
   ## apply continuity correction to _all_ studies if one contains zero
@@ -70,16 +70,11 @@ phm.default <- function(x=NULL, TP, FN, FP, TN,
 		c  <- 0.5*(theta_hat-theta_Aj)^2*v^2-0.5*v
 		D <- sum(a^2)*sum(c^2)-(sum(a*c))^2
 		var_theta_A <- sum(c^2)/D
-		SE_A <-sqrt(var_theta_A)
-		L_A <- theta_A[j]-1.96*SE_A
-		U_A <- theta_A[j]+1.96*SE_A
 
 		var_tau_sq_A <- sum(a^2)/D
-		SE_tau_sq_A <-sqrt(var_tau_sq_A)
-		L_tau_sq <- tau_sq_A[j]-1.96*SE_tau_sq_A
-		U_tau_sq <- tau_sq_A[j]+1.96*SE_tau_sq_A
 
-		max_log_theta_A <- -(sum(0.5*((z-w*theta_A[j])^2/sigma_sq)))
+    max_log_theta_A <-  -0.5*sum(log(sigma_sq/(w^2) + tau_sq_A[j] )) - 
+      (sum(0.5*((theta_hat - theta_A[j])^2/(sigma_sq/(w^2) + tau_sq_A[j]))))
 		score_A <- sum(a)
 		score_AT <- sum(c)
 		chi_sq_A <- sum((theta_hat-theta_Aj)^2*v)
@@ -110,18 +105,17 @@ if(!hetero){
 		a <- (z-w*theta_A[j])*w*v+(z-w*theta_A[j])^2*v^2*t2*theta_A[j]-t2*v*theta_A[j]
 
 		var_theta_A <- 1/sum(a^2)
-		SE_a <- sqrt(var_theta_A)
-		L_a <- theta_A[j]-1.96*SE_a
-		U_a <- theta_A[j]+1.96*SE_a
 
-		max_log_theta_A <- -(sum(0.5*((z-w*theta_A[j])^2/sigma_sq)))
+		max_log_theta_A <-  -0.5*sum(log(sigma_sq)) -(sum(0.5*((z-w*theta_A[j])^2/sigma_sq)))
+
 		score_A <- sum(a)
 		chi_sq_A <- sum((z-w*theta_A[j])^2*v)
     
     var_tau_sq_A <- NULL
     score_AT <-NULL
 } # End !hetero
-
+  
+  
   if(hetero){
   coefficients <- c(theta_A[j], tau_sq_A[j])
   names(coefficients) <- c("theta", "taus_sq")
@@ -186,6 +180,8 @@ cat("\n")
 cat(c("Log-likelihood:", round(logLik(x$object),3), 
       "on",attr(logLik(x$object), "df"), "degrees of freedom\n"))
 cat(c("AIC: ", round(AIC(x$object),1), "\n"))
+cat(c("BIC: ", round(AIC(x$object, k = log(x$object$nobs)),1), "\n"))
+
 print(x$object$chi_sq_test)
 }
 

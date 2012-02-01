@@ -1,7 +1,8 @@
 reitsma <- function(X, ...) UseMethod("reitsma")
 
 reitsma.default <-
-function(X = NULL, TP, FN, FP, TN, correction = 0.5, correction.control = "all",REML = TRUE, ...)
+function(X = NULL, TP, FN, FP, TN, correction = 0.5, correction.control = "all",
+         REML = TRUE, ...)
 {
 if(!is.null(X)){
 X <- as.data.frame(X)
@@ -15,7 +16,7 @@ if(is.null(X)){
   origdata <- data.frame(TP = TP, FN = FN, FP = FP, TN = TN)
 }
 
-stopifnot(round(TP) == TP, round(FN) == FN, round(FP) == FP, round(TN) == TN)
+checkdata(origdata)
 
 N <- length(TP)	
 	
