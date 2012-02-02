@@ -1,16 +1,17 @@
 # function of the class "descript"
 madaDescript <- function(x=NULL, TP, FN, FP, TN, level = 0.95, correction = 0.5, 
                          correction.control = "all", method = "wilson", ...){
+  names <- x$names
   alpha<-1-level
 	kappa<-qnorm((1-alpha/2))
   DNAME <- deparse(substitute(x))
   if(!is.null(x)){
     X <- as.data.frame(x)
-    origdata <- X
     TP <- X$TP
     FN <- X$FN
     FP <- X$FP
     TN <- X$TN
+    origdata <- data.frame(TP = TP, FN = FN, FP = FP, TN = TN)
   }
   if(is.null(x)){origdata <- data.frame(TP = TP, FN = FN, FP = FP, TN = TN)}
 
@@ -33,8 +34,12 @@ madaDescript <- function(x=NULL, TP, FN, FP, TN, level = 0.95, correction = 0.5,
   number.of.pos<-TP+FN
   number.of.neg<-FP+TN
   sens.ci<-binomCIvector(TP,number.of.pos, conf.level  = level, method = method)
+  colnames(sens.ci) <- c(paste(100*alpha/2, "%", sep="", collapse = ""), paste(100*(1-alpha/2), "%", sep="", collapse = ""))
   spec.ci<-binomCIvector(TN,number.of.neg, conf.level  = level, method = method)
+  colnames(spec.ci) <- c(paste(100*alpha/2, "%", sep="", collapse = ""), paste(100*(1-alpha/2), "%", sep="", collapse = ""))
   fpr.ci<-binomCIvector(FP,number.of.neg, conf.level  = level, method = method)
+  colnames(fpr.ci) <- c(paste(100*alpha/2, "%", sep="", collapse = ""), paste(100*(1-alpha/2), "%", sep="", collapse = ""))
+
 
   sens <- TP/number.of.pos
   spec <- TN/number.of.neg
@@ -49,13 +54,17 @@ madaDescript <- function(x=NULL, TP, FN, FP, TN, level = 0.95, correction = 0.5,
 	se.lnnegLR <- sqrt(1/TN + 1/FN - 1/number.of.pos - 1/number.of.neg)
 	posLR.ci<-cbind(exp(-kappa*se.lnposLR),exp(kappa*se.lnposLR))
 	posLR.ci<-posLR*posLR.ci
+  colnames(posLR.ci) <- c(paste(100*alpha/2, "%", sep="", collapse = ""), paste(100*(1-alpha/2), "%", sep="", collapse = ""))
+
 	negLR.ci<-cbind(exp(-kappa*se.lnnegLR),exp(kappa*se.lnnegLR))
 	negLR.ci<-negLR*negLR.ci
-	
-	DOR<-posLR/negLR
+	colnames(negLR.ci) <- c(paste(100*alpha/2, "%", sep="", collapse = ""), paste(100*(1-alpha/2), "%", sep="", collapse = ""))
+
+  DOR<-posLR/negLR
   se.lnDOR<-sqrt(1/TP + 1/TN + 1/FN + 1/FP)
 	DOR.ci<-cbind(exp(-kappa*se.lnDOR),exp(kappa*se.lnDOR))
 	DOR.ci<-DOR*DOR.ci
+  colnames(DOR.ci) <- c(paste(100*alpha/2, "%", sep="", collapse = ""), paste(100*(1-alpha/2), "%", sep="", collapse = ""))
 
   output <- list(sens = list(sens = sens, sens.ci = sens.ci),
                  spec = list(spec = spec, spec.ci = spec.ci),
@@ -64,14 +73,56 @@ madaDescript <- function(x=NULL, TP, FN, FP, TN, level = 0.95, correction = 0.5,
                  negLR = list(negLR = negLR, negLR.ci = negLR.ci),
                  DOR = list(DOR = DOR, DOR.ci = DOR.ci),
                  cor_sens_fpr = cor(sens,fpr),
-                 level = level, method = method,
-                 nobs = nrow(origdata), data = origdata, data.name = DNAME)
+                 level = level, method = method, names = names,
+                 nobs = nrow(origdata), data = origdata, data.name = DNAME,
+                 correction = correction, correction.control = correction.control)
   class(output) <- "madaDescript"
   output
 }
 
+print.madaDescript <- function(x, digits = 3){
+  cat("Descriptive summary of", x$data.name, "with", x$nobs, "primary studies.\n")
+  cat("Confidence level for all calculations set to", 100*x$level, "%\n")
+  cat("Using a continuity correction of", x$correction, "if applicable \n")
+  cat("\n")
+  
+  
+  cat("Diagnostic accuracies \n")
+  output1 <- round(cbind(x$sens$sens, x$sens$sens.ci, x$spec$spec, x$spec$spec.ci), digits)
+  rownames(output1) <- x$names
+  colnames(output1)[c(1,4)] <- c("sens", "spec")
+  print(output1)
+  
+  cat("\n")
+  cat("Diagnostic OR and likelihood Ratios \n")
+  output2 <- round(cbind(x$DOR$DOR, x$DOR$DOR.ci, x$posLR$posLR, x$posLR$posLR.ci,
+                         x$negLR$negLR, x$negLR$negLR.ci), digits)
+  rownames(output2) <- x$names
+  colnames(output2)[c(1,4,7)] <- c("DOR", "posLR", "negLR")
+  print(output2)
+  
+  cat("\n")
+  cat("Correlation of sensitivities and false positive rates: \n")
+  print(round(CIrho(x$cor_sens_fpr, x$nobs), digits))
+  return(invisible(NULL))
+  }
+
+CIrho <- function(rho, N, level = 0.95){
+  stopifnot(rho < 1, rho > -1, N > 3, round(N) == N)
+  z <- atanh(rho)
+  kappa <- qnorm(1-(1-level)/2)
+  output <- c(rho, tanh(z - kappa*sqrt(1/(N-3))),tanh(z + kappa*sqrt(1/(N-3))))
+  names(output) <- c("rho", paste(100*(1-level)/2, "%", collapse =""), 
+                     paste(100*(1- (1-level)/2), "%", collapse =""))
+  output
+}
 
 
+madaNaive <- function(x, level = 0.95){
+  
+}
+  
+ 
 
 checkdata <- function(X, nrowwarn = 5){
   X <- as.data.frame(X)

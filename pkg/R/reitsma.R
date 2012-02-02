@@ -174,7 +174,7 @@ if(class(output2) == "try-error"){cat("nlm failed, trying optim with method = SA
 
   df <- N - 5
 
-output <- list(coefficients = coef, vcov = Vcov, df = df, nobs = N, logLik = logLik,
+output <- list(coefficients = coef, vcov = Vcov, df = df, nobs = 2*N, logLik = logLik,
                iterations = (iterations+1), call = match.call(), REML=REML, data = origdata)
 
 class(output) <- "reitsma"
