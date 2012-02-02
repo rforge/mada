@@ -1,6 +1,6 @@
-# function of the class "descript"
-madaDescript <- function(x=NULL, TP, FN, FP, TN, level = 0.95, correction = 0.5, 
-                         correction.control = "all", method = "wilson", ...){
+# function, output of class "madad"
+madad <- function(x=NULL, TP, FN, FP, TN, level = 0.95, correction = 0.5, 
+                         correction.control = "all", method = "wilson", yates = TRUE, ...){
   names <- x$names
   alpha<-1-level
 	kappa<-qnorm((1-alpha/2))
@@ -65,22 +65,24 @@ madaDescript <- function(x=NULL, TP, FN, FP, TN, level = 0.95, correction = 0.5,
 	DOR.ci<-cbind(exp(-kappa*se.lnDOR),exp(kappa*se.lnDOR))
 	DOR.ci<-DOR*DOR.ci
   colnames(DOR.ci) <- c(paste(100*alpha/2, "%", sep="", collapse = ""), paste(100*(1-alpha/2), "%", sep="", collapse = ""))
-
+  
   output <- list(sens = list(sens = sens, sens.ci = sens.ci),
                  spec = list(spec = spec, spec.ci = spec.ci),
                  fpr = list(fpr = fpr, fpr.ci = fpr.ci),
-                 posLR = list(posLR = posLR, posLR.ci = posLR.ci),
-                 negLR = list(negLR = negLR, negLR.ci = negLR.ci),
-                 DOR = list(DOR = DOR, DOR.ci = DOR.ci),
+                 sens.htest = prop.test(TP, number.of.pos, correct = yates),
+                 spec.htest = prop.test(TN, number.of.neg, correct = yates),
+                 posLR = list(posLR = posLR, posLR.ci = posLR.ci, se.lnposLR = se.lnposLR),
+                 negLR = list(negLR = negLR, negLR.ci = negLR.ci, se.lnnegLR = se.lnnegLR),
+                 DOR = list(DOR = DOR, DOR.ci = DOR.ci, se.lnDOR = se.lnDOR),
                  cor_sens_fpr = cor(sens,fpr),
                  level = level, method = method, names = names,
                  nobs = nrow(origdata), data = origdata, data.name = DNAME,
                  correction = correction, correction.control = correction.control)
-  class(output) <- "madaDescript"
+  class(output) <- "madad"
   output
 }
 
-print.madaDescript <- function(x, digits = 3){
+print.madad <- function(x, digits = 3){
   cat("Descriptive summary of", x$data.name, "with", x$nobs, "primary studies.\n")
   cat("Confidence level for all calculations set to", 100*x$level, "%\n")
   cat("Using a continuity correction of", x$correction, "if applicable \n")
@@ -88,13 +90,35 @@ print.madaDescript <- function(x, digits = 3){
   
   
   cat("Diagnostic accuracies \n")
-  output1 <- round(cbind(x$sens$sens, x$sens$sens.ci, x$spec$spec, x$spec$spec.ci), digits)
-  rownames(output1) <- x$names
-  colnames(output1)[c(1,4)] <- c("sens", "spec")
-  print(output1)
+  output1a <- round(cbind(x$sens$sens, x$sens$sens.ci, x$spec$spec, x$spec$spec.ci), digits)
+  rownames(output1a) <- x$names
+  colnames(output1a)[c(1,4)] <- c("sens", "spec")
+  print(output1a)
+  
+  format.test.result<-function(x)
+  {
+	out <- character()
+    if (!is.null(x$statistic)) 
+        out <- c(out, paste(names(x$statistic), "=", format(round(x$statistic, 
+            4))), ", ")
+    if (!is.null(x$parameter)) 
+        out <- c(out, paste(names(x$parameter), "=", format(round(x$parameter, 
+            3))), ", ")
+    if (!is.null(x$p.value)) {
+        fp <- format.pval(x$p.value, digits = digits)
+        out <- c(out, paste("p-value =", fp))}
+    return(out)
+	} # End of function format.test.result
+
+  sens.result<-format.test.result(x$sens.htest)
+	spec.result<-format.test.result(x$spec.htest)
+  
+	output1b<-paste(c("\nTest for equality of sensitivities: \n",sens.result, "\n",
+                   "Test for equality of specificities: \n",spec.result, "\n\n"), collapse="")
+	cat(output1b)
   
   cat("\n")
-  cat("Diagnostic OR and likelihood Ratios \n")
+  cat("Diagnostic OR and likelihood ratios \n")
   output2 <- round(cbind(x$DOR$DOR, x$DOR$DOR.ci, x$posLR$posLR, x$posLR$posLR.ci,
                          x$negLR$negLR, x$negLR$negLR.ci), digits)
   rownames(output2) <- x$names
@@ -117,12 +141,175 @@ CIrho <- function(rho, N, level = 0.95){
   output
 }
 
+#calculate cochranes Q, expects (s.e. of) log transformed DOR, posLR, negLR 
+cochran.Q<-function(x, weights)
+{
+	if(length(weights) != length(x)){stop("Length of weights does not match length of x")}				
+	bar.x<-sum(weights*x)/sum(weights)
+	Q<-sum(weights*((x-bar.x)^2))
+	k<-length(x)
+	if(k <= 1)stop("x needs to have length at least 2")
+	p.value<-pchisq(Q, k-1, lower.tail = FALSE)
+	#fp<-format(round(p.value, 4))
+	#fQ<-format(round(Q,4))
+	output<-c(Q,p.value,as.integer(k-1))
+	names(output)<-c("Q", "p-value", "df")
+	return(output)
+	}
 
-madaNaive <- function(x, level = 0.95){
+
+
+madauni <- function(x, type = "DOR", method = "DSL", suppress = TRUE){
+
+if(suppress){x <- suppressWarnings(madad(x))
+             }else{
+               x <- madad(x)
+             }  
   
+TP <- x$data$TP
+FP <- x$data$FP
+FN <- x$data$FN
+TN <- x$data$TN
+
+number.of.pos<-TP+FN
+number.of.neg<-FP+TN
+nop <- number.of.pos
+non <- number.of.neg
+total <- nop + non
+
+# from Cochran.Q and inverse variance weights calculate between study variance
+naive.tausquared<-function(Q,weights)
+{
+k<-length(weights)
+if(Q<(k-1)){return(0)}
+else
+return((Q-k+1)/(sum(weights)-(sum(weights^2)/sum(weights))))
+}
+
+if(! method %in% c("MH","DSL"))stop("method must be either \"MH\" or \"DSL\"")else
+nobs <- x$nobs
+theta <-switch(type, "DOR" = x$DOR$DOR, "posLR" = x$posLR$posLR, 
+                 "negLR" = x$negLR$negLR)
+  
+if(method == "MH")
+  {
+  weights<-switch(type, "DOR" = FP*FN/nobs, "posLR" = FP*number.of.pos/nobs, 
+                  "negLR" = TN*number.of.pos/nobs)
+  coef <- log(sum(weights*theta)/sum(weights))
+  CQ<-cochran.Q(theta, weights = weights)
+  tau.squared <- NULL
+  
+  P <- sum((nop*non*(TP+FP) - TP*FP*total)/total^2)
+  U <- sum(TP*non/total)
+  V = sum(FN*nop/total)
+  Uprime = sum(FP*non/total)
+  Vprime = sum(TN*nop/total)
+  R = sum(TP*TN/total)
+  S = sum(FP*FN/total)
+  E = sum((TP+TN)*TP*TN/(total^2))
+  FF = sum((TP+TN)*FN*FP/(total^2))
+  G = sum((FP+FN)*TP*TN/(total^2))
+  H = sum((FP+FN)*FP*FN/(total^2))
+  
+  vcov <- switch(type, "DOR" = 0.5*(E/(R^2) + (F+G)/(R*S) + H/(S^2)),
+                        "posLR" = P/(U*V), "negLR" = P/(Uprime*Vprime)) 
+  }#end of method = "MH"
+
+if(method == "DSL")
+  {
+  se.lntheta <- switch(type, "DOR" = x$DOR$se.lnDOR, "posLR" = x$posLR$se.lnposLR, 
+                       "negLR" = x$negLR$se.lnnegLR)
+  lntheta <- log(theta)
+  CQ<-cochran.Q(lntheta, 1/se.lntheta^2)
+  tau.squared<-naive.tausquared(CQ[1],1/(se.lntheta^2))
+  weights<-1/(se.lntheta^2+tau.squared)
+  #recalculate CQ based on new weights
+  CQ<-cochran.Q(lntheta, weights)  
+  coef <- sum(weights*lntheta)/sum(weights)
+  vcov <- 1/sum(weights)
+  }#end of method == "DSL"
+
+names(coef) <- paste("ln", type, collapse ="", sep ="")
+
+vcov <- matrix(vcov, nrow = 1, ncol = 1)
+colnames(vcov) <- paste("ln", type, collapse ="", sep ="")
+rownames(vcov) <- paste("ln", type, collapse ="", sep ="")
+
+
+output <- list(coefficients = coef, vcov = vcov,  tau_sq = tau.squared, weights = weights,
+               type = type, method = method, data = x$data, theta = theta, CQ = CQ, nobs = length(theta),
+               call = match.call())
+class(output) <- "madauni"
+output
+}# end of function madauni
+  
+print.madauni <- function(x, digits = 3, ...){
+  cat("Call:\n")
+  print(x$call)
+  cat("\n")
+  if(is.null(x$tau_sq)){
+  ans <- exp(x$coefficients)
+  names(ans) <- x$type
+  print(ans)
+      }else{
+  ans <- c(exp(x$coefficients),x$tau_sq)
+  names(ans) <- c(x$type, "tau^2")
+  print(round(ans, digits))
+  }  
+}
+
+vcov.madauni <- function(x){x$vcov}
+
+summary.madauni <- function(object, level = .95, ...){
+x <- object
+# Calculate Higgins I^2, only if method is not "MH"  
+Higgins.Isq<-function(T,df){return(max(0,100*(T-df)/T))}
+
+if(object$method == "DSL"){
+  Isq <- Higgins.Isq(x$CQ[1], x$CQ[3])}else{
+  Isq <- NULL
 }
   
- 
+CIcoef <- rbind(exp(cbind(coef(x), confint(x, level = level))),
+                cbind(coef(x), confint(x, level = level)))
+rownames(CIcoef) <- c(x$type,paste("ln",x$type, sep ="", collapse = ""))
+colnames(CIcoef)[1] <- paste(x$method, "estimate", collapse ="")
+
+Q <- function(tau2){sum(((log(x$theta) - coef(x)[1])^2)/(1/x$weights+tau2))}
+CQ <- ifelse(is.null(x$tau_sq), Q(0), Q(x$tau_sq))
+
+## Q-Profile Confidence interval for tau_sq like in Viechtbauer (2007)
+if(!is.null(x$tau_sq)){
+# browser()
+  kappa_up <- qchisq(1-(1-level)/2, x$nobs - 1)
+  kappa_low <- qchisq((1-level)/2, x$nobs - 1)
+  if(Q(0) < kappa_up){lower <- 0}else{
+      lower <-  uniroot(function(x){Q(x)-kappa_up}, lower = 0, upper = 10^4)$root}
+  if(Q(0) < kappa_low){upper <- 0}else{
+  upper <-  uniroot(function(x){Q(x)-kappa_low}, lower = 0, upper = 10^4)$root}
+  CIcoef <- rbind(CIcoef, c(x$tau_sq, lower, upper), sqrt(c(x$tau_sq, lower, upper)))
+  rownames(CIcoef)[3:4] <- c("tau^2","tau")
+}
+
+output <- list(x=object, Isq = Isq, CIcoef = CIcoef)
+class(output) <- "summary.madauni"
+output
+  
+}
+
+print.summary.madauni <- function(x, digits = 3,...){
+
+cat("Call:\n")
+print(x$x$call)
+cat("\nEstimates:\n")
+print(round(x$CIcoef,digits))
+cat("\nCochran's Q: ",round(x$x$CQ[1],digits),
+    " (",round(x$x$CQ[3])," df, p = ", round(x$x$CQ[2], digits),")", sep = "")
+if(!is.null(x$Isq)){cat("\nHiggins' I^2: ",round(x$Isq, digits),"%", sep ="")}
+}
+
+
+
 
 checkdata <- function(X, nrowwarn = 5){
   X <- as.data.frame(X)
@@ -322,121 +509,4 @@ binomCIvector<-function(x, n, conf.level = 0.95, method="wilson"){
 		return(CI)
 	}
 
-############################
-# Naive Homogeneity checks #
-############################
 
-# Naively test for equality of proportions using R's prop.test
-naive.prop.test<-function(M, conf.level = 0.95, correct = TRUE){
-	
-	M<-as.matrix(M)
-	true.pos<-M[,1]
-	false.neg<-M[,2]
-	false.pos<-M[,3]
-	true.neg<-M[,4]
-	number.of.pos<-true.pos+false.neg
-	number.of.neg<-false.pos+true.neg
-	# First calculate the htests for sens and spec
-	sens.htest<-prop.test(true.pos,number.of.pos,conf.level = conf.level, correct = correct)
-	spec.htest<-prop.test(true.neg,number.of.neg,conf.level = conf.level, correct = correct)
-	
-	format.test.result<-function(x, digits = 4)
-	{
-	out <- character()
-    if (!is.null(x$statistic)) 
-        out <- c(out, paste(names(x$statistic), "=", format(round(x$statistic, 
-            4))), ", ")
-    if (!is.null(x$parameter)) 
-        out <- c(out, paste(names(x$parameter), "=", format(round(x$parameter, 
-            3))), ", ")
-    if (!is.null(x$p.value)) {
-        fp <- format.pval(x$p.value, digits = digits)
-        out <- c(out, paste("p-value =", fp))}
-    return(out)
-	} # End of function format.test.result
-	sens.result<-format.test.result(sens.htest)
-	spec.result<-format.test.result(spec.htest)
-	output<-paste(c("Test for equality of sensitivities: \n",sens.result, "\n","Test for equality of specificities: \n",spec.result, "\n", "Both p-values for confidence level ",conf.level),collapse="")
-	cat(output)
-	}
-
-#calculate cochranes Q, expects (s.e. of) log transformed DOR, posLR, negLR 
-cochrane.Q<-function(x, sd.x, weights = NULL)
-{
-	if(is.null(weights)){
-		if(length(weights != length(x))){stop("Length of weights does not match length of x")}				
-		weights <- 1/(sd.x^2)}
-	if(length(x) != length(sd.x)){stop("Length of x does not match length of sd.x")}
-	bar.x<-sum(weights*x)/sum(weights)
-	Q<-sum(weights*((x-bar.x)^2))
-	k<-length(x)
-	if(k <= 1)stop("x needs to have length at least 2")
-	p.value<-pchisq(Q, k-1, lower.tail = FALSE)
-	#fp<-format(round(p.value, 4))
-	#fQ<-format(round(Q,4))
-	output<-c(Q,p.value,as.integer(k-1))
-	names(output)<-c("Cochran's Q", "p-value", "df")
-	return(output)
-	}
-	
-	
-# Calculate Higgins I^2	
-Higgins.Isq<-function(T,df){return(round(max(0,100*(T-df)/T),2))}
-
-# naively pool proportions like sensitivity or specificity (in absence of any heterogeneity)
-naive.prop.pool<-function(success, total){
-	return(sum(success)/sum(total))	
-	}
-
-# from Cochran.Q and inverse variance weights calculate between study variance
-naive.tausquared<-function(Q,weights)
-{
-k<-length(weights)
-if(Q<(k-1)){return(0)}
-else
-return((Q-k+1)/(sum(weights)-(sum(weights^2)/sum(weights))))
-}
-
-	
-# naively pool theta (i.e. LR or (D)OR) using either Mantel Haenszel or DerSimonian Laird method (method = c("MH","DSL"), type = c("posLR", "negLR", "DOR")
-# TODO: method = "DSL" gives weird values! (very small!) look into that!
-
-naive.pool<-function(M, type = "DOR", method="MH")
-{
-M<-as.matrix(M)
-if(! method %in% c("MH","DSL"))stop("method must be either \"MH\" or \"DSL\"")else
-total<-rowSums(M)
-true.pos<-M[,1]
-false.neg<-M[,2]
-false.pos<-M[,3]
-true.neg<-M[,4]
-number.of.pos<-true.pos+false.neg
-number.of.neg<-false.pos+true.neg
-if(method == "MH")
-{
-weights<-switch(type, "DOR" = false.pos*false.neg/total, "posLR" = false.pos*number.of.pos/total, "negLR" = true.neg*number.of.pos/total)
-output<-switch(type, "DOR" = sum(weights*calc.DOR(M)[,1])/sum(weights), "posLR" = sum(weights*calc.LR(M)[,1])/sum(weights), "negLR" = sum(weights*calc.LR(M)[,4])/sum(weights))
-output<-cbind(output)
-colnames(output)<-type
-return(output)
-}
-if(method == "DSL")
-{
-ln.se<-sqrt(switch(type, "DOR"=(1/true.pos+1/true.neg+1/false.neg+1/false.pos),
-		"posLR" = (1/true.pos+1/false.pos-1/number.of.pos-1/number.of.neg),
-		"negLR" = (1/true.neg+1/false.neg-1/number.of.pos-1/number.of.neg)))
-
-ln.theta<-log(switch(type, "DOR" = calc.DOR(M)[,1], "posLR" = calc.LR(M)[,1], "negLR" = calc.LR(M)[,4]))
-
-cQ<-cochrane.Q(ln.theta,ln.se)[1]
-
-tau.squared<-naive.tausquared(cQ,1/(ln.se^2))
-
-weights.DL<-1/(ln.se^2+tau.squared)
-
-output<-exp(sum(weights.DL*ln.theta)/sum(weights.DL))
-output<-cbind(output)
-colnames(output)<-type
-return(output)
-}
-}
