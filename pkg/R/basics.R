@@ -82,7 +82,7 @@ madad <- function(x=NULL, TP, FN, FP, TN, level = 0.95, correction = 0.5,
   output
 }
 
-print.madad <- function(x, digits = 3){
+print.madad <- function(x, digits = 3, ...){
   cat("Descriptive summary of", x$data.name, "with", x$nobs, "primary studies.\n")
   cat("Confidence level for all calculations set to", 100*x$level, "%\n")
   cat("Using a continuity correction of", x$correction, "if applicable \n")
@@ -127,7 +127,7 @@ print.madad <- function(x, digits = 3){
   
   cat("\n")
   cat("Correlation of sensitivities and false positive rates: \n")
-  print(round(CIrho(x$cor_sens_fpr, x$nobs), digits))
+  print(round(CIrho(x$cor_sens_fpr, x$nobs), digits)[1,])
   return(invisible(NULL))
   }
 
@@ -135,8 +135,8 @@ CIrho <- function(rho, N, level = 0.95){
   stopifnot(rho < 1, rho > -1, N > 3, round(N) == N)
   z <- atanh(rho)
   kappa <- qnorm(1-(1-level)/2)
-  output <- c(rho, tanh(z - kappa*sqrt(1/(N-3))),tanh(z + kappa*sqrt(1/(N-3))))
-  names(output) <- c("rho", paste(100*(1-level)/2, "%", collapse =""), 
+  output <- matrix(cbind(rho, tanh(z - kappa*sqrt(1/(N-3))),tanh(z + kappa*sqrt(1/(N-3)))), ncol = 3)
+  colnames(output) <- c("rho", paste(100*(1-level)/2, "%", collapse =""), 
                      paste(100*(1- (1-level)/2), "%", collapse =""))
   output
 }
@@ -193,8 +193,8 @@ theta <-switch(type, "DOR" = x$DOR$DOR, "posLR" = x$posLR$posLR,
   
 if(method == "MH")
   {
-  weights<-switch(type, "DOR" = FP*FN/nobs, "posLR" = FP*number.of.pos/nobs, 
-                  "negLR" = TN*number.of.pos/nobs)
+  weights<-switch(type, "DOR" = FP*FN/total, "posLR" = FP*nop/total, 
+                  "negLR" = TN*nop/total)
   coef <- log(sum(weights*theta)/sum(weights))
   CQ<-cochran.Q(theta, weights = weights)
   tau.squared <- NULL
@@ -258,7 +258,7 @@ print.madauni <- function(x, digits = 3, ...){
   }  
 }
 
-vcov.madauni <- function(x){x$vcov}
+vcov.madauni <- function(object){object$vcov}
 
 summary.madauni <- function(object, level = .95, ...){
 x <- object

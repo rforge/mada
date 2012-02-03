@@ -11,6 +11,7 @@ export("print.madauni")
 export("summary.madauni")
 export("print.summary.madauni")
 export("vcov.madauni")
+export("cochran.Q")
 
 S3method(print, reitsma)
 S3method(summary, reitsma)

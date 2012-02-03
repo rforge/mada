@@ -72,3 +72,4 @@ plot(sroc.AuditC, type = "l")
 plot(fit)
 }
 \keyword{regression}
+\keyword{classes}

@@ -84,4 +84,6 @@ lines(sroc.Dementia)
 
 }
 \keyword{regression}
+\keyword{classes}
+
 
