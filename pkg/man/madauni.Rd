@@ -17,7 +17,7 @@ The classic strategy to meta-analysis of diagnostic accuracy data is to pool a u
 madauni(x, type = "DOR", method = "DSL", suppress = TRUE)
 }
 \arguments{
-  \item{x}{\item{x}{any object that can be converted to a data frame with integer variables \code{TP}, \code{FN}, \code{FP} and \code{TN}, alternatively a matrix with column names including \code{TP}, \code{FN}, \code{FP} and \code{TN}.}}
+  \item{x}{any object that can be converted to a data frame with integer variables \code{TP}, \code{FN}, \code{FP} and \code{TN}, alternatively a matrix with column names including \code{TP}, \code{FN}, \code{FP} and \code{TN}.}
   \item{type}{character, what effect size should be pooled? Either \code{"DOR"}, \code{"posLR"} or \code{"negLR"}.}
   \item{method}{character, method of estimation. Either \code{"MH"} or \code{"DSL"}.}
   \item{suppress}{logical, should warnings produced by the internal call to \code{\link{madad}} be suppressed?}
@@ -27,10 +27,8 @@ The Mantel-Haenszel method performs fixed effect estimation of the effect sizes.
 
 The DerSimonian-Laird method performs a random effects meta-analysis. For this \eqn{\tau^2}{tau^2}, the variance of the log-transformed effect size (DOR, positive or negative likelihood ratio) is calculated by the DerSimonian and Laird (1986) method. The confidence interval for \eqn{\tau^2}{tau^2} is derived by inverting the Q-Test of Viechtbauer (2007).
 }
-\value{An object of class \code{madauni} which is essentially a list with the following components:
-\item{}{}
+\value{An object of class \code{madauni}, for which some standard methods are available, see \code{\link{madauni-class}}}
 
-}
 \references{
 DerSimonian, R. and Laird, N. (1986). \dQuote{Meta-analysis in clinical trials.} \emph{Controlled clinical trials}, \bold{7}, 177--188.
 
@@ -41,7 +39,6 @@ Robins, J. and Greenland, S. and Breslow, N.E. (1986). \dQuote{A general estimat
 Viechtbauer, W. (2007). \dQuote{Confidence intervals for the amount of heterogeneity in meta-analysis.} \emph{Statistics in Medicine}, \bold{26}, 37--52.
 }
 
-}
 \author{
 Philipp Doebler <philipp.doebler@googlemail.com>
 }

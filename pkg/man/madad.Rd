@@ -30,7 +30,6 @@ print.madad(x, digits = 3, ...)
 \item{level}{numeric, confidence level for the calculations of confidence intervals.}
 \item{method}{character, method used to calculate the confidence intervals for sensitivities, specificities and false positive rates. One of \code{"wald"}, \code{"wilson"}, \code{"agresti-coull"}, \code{"jeffreys"}, \code{"modified wilson"}, \code{"modified jeffreys"}, \code{"clopper-pearson"}, \code{"arcsine"}, \code{"logit"}, \code{"witting"}}
 \item{yates}{logical, should a Yates correction be used for testing the equality of sensitivities and specificities?}
-\item{x}{an object of class \code{madad}.}
 \item{digits}{integer, to what decimal place is the output to be rounded?}
 \item{\dots}{further arguments to be passed on the other funtions (currently none).}
 }

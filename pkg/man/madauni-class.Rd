@@ -8,14 +8,14 @@
 \alias{print.summary.madauni}
 
 \title{
-Methods for the class \name{madauni}.
+Methods for the class \code{madauni}.
 }
 \description{
 Various methods for the output of the function \code{\link{madauni}}. Also the default method \code{\link{confint}} works for this class.
 }
 \usage{
 print.madauni(x, digits = 3, ...)
-vcov.madauni(x)
+vcov.madauni(object, ...)
 summary.madauni(object, level = 0.95, ...)
 print.summary.madauni(x, digits = 3, ...)
 }
@@ -27,13 +27,8 @@ print.summary.madauni(x, digits = 3, ...)
   \item{\dots}{arguments to be passed to methods}
 }
 
-\details{
-}
-\value{\code{summary.madauni} returns a list of class \code{summary.madauni} which is printed with \code{print.summary.madauni}.
-}
-\author{
-Philipp Doebler <philipp.doebler@googlemail.com>
-}
+\value{\code{summary.madauni} returns a list of class \code{summary.madauni} which is printed with \code{print.summary.madauni}.}
+\author{Philipp Doebler <philipp.doebler@googlemail.com>}
 \seealso{
 \code{\link{madauni}}
 }
