@@ -53,22 +53,36 @@ spec <- function(x){x$TN/(x$FP + x$TN)}
 
 ### ellipse from package ellipse
 
-#ROC.ellipse <- function(M, correction = 0.5, conf.level = 0.95, method = "wilson", pch = 1, add = FALSE, ...)
-#{
-#  x <- calc.SensSpec(M, FPR = TRUE, correction = correction, conf.level = 0.5, method = method)
-#  if(!add){plot(x[,4], x[,1], xlim = c(0,1), ylim =c(0,1), pch = pch, ...)}
-#  if(add){points(x[,4], x[,1], pch = pch, ...)}
-#  logit.x <- logit(x)
-#  half.conf.level <- 1-(1-conf.level)/2
-#  for(i in 1:dim(x)[1]){
-#    lines(inv.logit(ellipse(0,
-#          centre = c(logit.x[i,4],logit.x[i,1]),
-#          scale = c((logit.x[i,1]-logit.x[i,2])*qnorm(half.conf.level), (logit.x[i,4]-logit.x[i,5])*qnorm(half.conf.level)))),
-#          col ="grey")
-#  points(x[,4], x[,1], xlim = c(0,1), ylim =c(0,1), pch = pch, ... )
-#    }
-#  return(invisible(NULL))
-#}
+ROC.ellipse <- function(M, correction = 0.5, conf.level = 0.95, 
+                        xlim = c(0,1), ylim =c(0,1),
+                        method = "wilson", pch = 1, add = FALSE, 
+                        corr = 0, suppress = TRUE, ...)
+{
+ if(suppress){x <- suppressWarnings(  x <- madad(M, correction = correction, conf.level = conf.level, 
+             method = method))
+             }else{
+               x <-   x <- madad(M, correction = correction, conf.level = conf.level, 
+             method = method)
+             }
+ 
+ if(corr == "logits"){corr <- cor(logit(x$sens$sens),logit(x$fpr$fpr))}
+  if(!add){plot(x$fpr$fpr, x$sens$sens, xlim = xlim, ylim =ylim, pch = pch, 
+                xlab = "False positive rate", ylab = "Sensitivity", ...)}
+  if(add){points(x$fpr$fpr, x$sens$sens, pch = pch, ...)}
+  logit.x <- logit(cbind(x$fpr$fpr,x$fpr$fpr.ci, x$sens$sens, x$sens$sens.ci))
+  half.conf.level <- 1-(1-conf.level)/2
+  kappa <- qnorm(half.conf.level)
+  for(i in 1:nrow(logit.x)){
+    lines(inv.logit(ellipse(corr,
+                            centre = c(logit.x[i,1],logit.x[i,4]),
+                            scale = c((logit.x[i,1]-logit.x[i,2]), 
+                                      (logit.x[i,4]-logit.x[i,5]))/kappa, 
+                            level = conf.level)),
+          col ="grey")
+  points(x$fpr$fpr, x$sens$sens, xlim = c(0,1), ylim =c(0,1), pch = pch, ... )
+    }
+  return(invisible(NULL))
+}
 
 
 

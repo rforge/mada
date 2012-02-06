@@ -225,7 +225,7 @@ mcsroc.reitsma <- function(fit, fpr = 1:99/100, replications = 10000, lambda = 1
 }
   
 ROCellipse.reitsma <- function(fit, level = 0.95, add = FALSE, pch = 1, ...){
-  ROC.ellipse2(fit, nobs = fit$nobs, conf.level = level, add = add, pch = pch, ...)
+  ROC.ellipse2(fit, nobs = fit$nobs/2, conf.level = level, add = add, pch = pch, ...)
 }
 
 
