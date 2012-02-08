@@ -56,7 +56,7 @@ spec <- function(x){x$TN/(x$FP + x$TN)}
 ROC.ellipse <- function(M, correction = 0.5, conf.level = 0.95, 
                         xlim = c(0,1), ylim =c(0,1),
                         method = "wilson", pch = 1, add = FALSE, 
-                        corr = 0, suppress = TRUE, ...)
+                        corr = 0, suppress = TRUE, ellipsecol = "grey", ...)
 {
  if(suppress){x <- suppressWarnings(  x <- madad(M, correction = correction, conf.level = conf.level, 
              method = method))
@@ -78,7 +78,7 @@ ROC.ellipse <- function(M, correction = 0.5, conf.level = 0.95,
                             scale = c((logit.x[i,1]-logit.x[i,2]), 
                                       (logit.x[i,4]-logit.x[i,5]))/kappa, 
                             level = conf.level)),
-          col ="grey")
+          col =ellipsecol)
   points(x$fpr$fpr, x$sens$sens, xlim = c(0,1), ylim =c(0,1), pch = pch, ... )
     }
   return(invisible(NULL))
