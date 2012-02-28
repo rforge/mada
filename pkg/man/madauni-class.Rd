@@ -1,6 +1,7 @@
 \name{madauni-class}
 
 
+\alias{madauni-class}
 \alias{summary.madauni-class}
 \alias{print.madauni}
 \alias{vcov.madauni}
