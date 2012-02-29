@@ -1,7 +1,7 @@
 # function, output of class "madad"
 madad <- function(x=NULL, TP, FN, FP, TN, level = 0.95, correction = 0.5, 
                          correction.control = "all", method = "wilson", yates = TRUE, ...){
-  names <- x$names
+  if(is.data.frame(x)){names <- x$names}else{names <- NULL}
   alpha<-1-level
 	kappa<-qnorm((1-alpha/2))
   DNAME <- deparse(substitute(x))
