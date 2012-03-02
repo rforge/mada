@@ -24,8 +24,8 @@ Objects of the class \code{\link{phm}} are output by the function with the same 
 \method{summary}{phm}(object, level = 0.95, ...)
 \method{sroc}{phm}(fit, fpr = 1:99/100, ...)
 \method{plot}{phm}(x, extrapolate = FALSE, confband = TRUE, level = 0.95,
-    ylim = c(0,1), xlim = c(0,1), sroclty = 1, sroclwd = 1, 
-    confbandlty = 2, confbandlwd = 0.5, ...)
+     ylim = c(0,1), xlim = c(0,1), sroclty = 1, sroclwd = 1, 
+     confbandlty = 2, confbandlwd = 0.5, ...)
 }
 \arguments{
   \item{x}{a \code{phm} object.}

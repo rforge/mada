@@ -15,7 +15,8 @@ Descriptive statistics for meta-analysis of diagnostic accuracy
 Given the frequencies of true positives, false negative, false positives and true negatives from primary diagnostic studies \code{madad} calculates various summary statistics. Apart from sensitivities, specificities and false positive rates the function also calculates the diagnostic odds ratio (DOR) and the positve and negative likelihood ratios, together with their respective confidence intervals. Also two hypothesis tests are calculated: one testing the equality of the sensitivities and the same for the false positive rates. 
 }
 \usage{
-madad(x = NULL, TP, FN, FP, TN, level = 0.95, correction = 0.5, correction.control = "all", method = "wilson", yates = TRUE, ...)
+madad(x = NULL, TP, FN, FP, TN, level = 0.95, correction = 0.5, 
+  correction.control = "all", method = "wilson", yates = TRUE, ...)
 
 print.madad(x, digits = 3, ...)
 }
@@ -25,7 +26,7 @@ print.madad(x, digits = 3, ...)
   \item{FN}{vector of integers, ingored if \code{X} is not \code{NULL}.}
   \item{FP}{vector of integers, ingored if \code{X} is not \code{NULL}.}
   \item{TN}{vector of integers, ingored if \code{X} is not \code{NULL}.}
-  \item{correction}{numeric, continuity correction applied if zero cells.}
+  \item{correction}{numeric, continuity correction applied to zero cells.}
   \item{correction.control}{character, if set to \code{"all"} (the default) the continuity correction is added to the whole data if only one cell in one study is zero. If set to \code{"single"} the correction is only applied to rows of the data which have a zero.}
 \item{level}{numeric, confidence level for the calculations of confidence intervals.}
 \item{method}{character, method used to calculate the confidence intervals for sensitivities, specificities and false positive rates. One of \code{"wald"}, \code{"wilson"}, \code{"agresti-coull"}, \code{"jeffreys"}, \code{"modified wilson"}, \code{"modified jeffreys"}, \code{"clopper-pearson"}, \code{"arcsine"}, \code{"logit"}, \code{"witting"}}

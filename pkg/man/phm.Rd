@@ -17,8 +17,8 @@ The function fits the model of Boehning" et al. (2012). The adjusted profile max
 \usage{
 phm(x, ...)
 \method{phm}{default}(x=NULL, TP, FN, FP, TN, 
-                        correction = 0.5, correction.control = "all", 
-                        hetero = TRUE, estimator = "APMLE", l = 100, ...)
+    correction = 0.5, correction.control = "all", 
+    hetero = TRUE, estimator = "APMLE", l = 100, ...)
 }
 \arguments{
 \item{x}{any object that can be converted to a data frame with integer variables \code{TP}, \code{FN}, \code{FP} and \code{TN}, alternatively a matrix with column names including \code{TP}, \code{FN}, \code{FP} and \code{TN}.

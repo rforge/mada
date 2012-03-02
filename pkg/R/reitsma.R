@@ -224,11 +224,24 @@ mcsroc.reitsma <- function(fit, fpr = 1:99/100, replications = 10000, lambda = 1
   mcsroc(fit, replications = replications, lambda = lambda, ...)
 }
   
-ROCellipse.reitsma <- function(fit, level = 0.95, add = FALSE, pch = 1, ...){
-  ROC.ellipse2(fit, nobs = fit$nobs/2, conf.level = level, add = add, pch = pch, ...)
+ROCellipse.reitsma <- function(x, level = 0.95, add = FALSE, pch = 1, ...){
+  ROC.ellipse2(x, nobs = x$nobs/2, conf.level = level, add = add, pch = pch, ...)
 }
 
-
+crosshair.reitsma <- function(x, level = 0.95, length = 0.1, pch = 1, ...){
+  ch <- inv.logit(confint(x, level = level)[c("mu1", "mu2"),])
+  pe <- inv.logit(coef(x)[c("mu2", "mu1")])
+#  if(!add){
+#    plot(matrix(pe, ncol = 2), pch = pch, xlim = xlim, ylim = ylim, 
+#         ylab = "Sensitivity", xlab = "False Positive Rate", ...)
+#  }else{
+    points(matrix(pe, ncol = 2), pch = pch, ...)
+#  }
+  arrows(ch[2,1], pe[2], x1 =ch[2,2],  length = length, angle = 90, code = 3, ...)
+  arrows(pe[1], ch[1,1],  y1 =ch[1,2],  length = length, angle = 90, code = 3, ...)
+  return(invisible(NULL))
+}
+  
 plot.reitsma <- function(x, extrapolate = FALSE, level = 0.95, 
                          ylim = c(0,1), xlim = c(0,1), pch = 1, 
                          sroclty = 1, sroclwd = 1, ...)
