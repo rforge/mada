@@ -164,13 +164,13 @@ if(class(output2) == "try-error"){cat("nlm failed, trying optim with method = SA
   
   attr(logLik, "df") <- 5
 
-  names(coef) <- c("mu1", "mu2", "Sigma11", "Sigma22", "Sigma11")
+  names(coef) <- c("mu1", "mu2", "Sigma11", "Sigma22", "Sigma21")
 
   hessian <- output2$hessian
   
   Vcov <- solve(hessian)
-  colnames(Vcov) <- c("mu1", "mu2", "Sigma11", "Sigma22", "Sigma11")
-  rownames(Vcov) <- c("mu1", "mu2", "Sigma11", "Sigma22", "Sigma11")
+  colnames(Vcov) <- c("mu1", "mu2", "Sigma11", "Sigma22", "Sigma21")
+  rownames(Vcov) <- c("mu1", "mu2", "Sigma11", "Sigma22", "Sigma21")
 
   df <- N - 5
 
