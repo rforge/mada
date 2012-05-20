@@ -1,0 +1,89 @@
+\documentclass[a4paper]{article}
+\usepackage{a4wide}
+\usepackage{amsmath,color,amsthm}
+\usepackage{url}
+\usepackage{hyperref}
+
+
+\title{Meta Analysis of Diagnositc Accuracy with \texttt{mada}}
+\author{Philipp Doebler \\
+      philipp.doebler@googlemail.com}
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+While substantial work has been conducted on methods for diagnostic meta-analysis, it has not become a routine procedure yet. One of the reasons for this is certainly the complexity of bivariate approaches, but another reason is that standard software packages for meta-analysis, for example \emph{Comprehensive Meta-Analysis} (\cite{}), do not include software to fit models appropriate for diagnostic meta-analysis. For the recommended (\cite{}) bivariate approach of Rutter and Gatsonis (TODO: citation) meta-analysts can use Bayesian approaches (for example in WinBUGS or OpenBUGS\cite{}), the stata macro (TODO: is it called macro?) of \cite{Harbord}, ...(TODO: andere Software raussuchen). So currently available software is either relatively complex (WinBUGS/OpenBUGS) or proprietary (stata, SAS).
+
+The open source R-package \texttt{mada} provides some established and some current approaches to diagnostic meta-analysis, as well as functions to produce descriptive statistics and graphics. It is hopefully complete enough to be the only tool needed for a diagnostic meta-analysis. \texttt{mada} has been developed with an R user in mind that has used standard model fitting functions already, and a lot of the output of \texttt{mada} will look familiar to such a user. While this vignette cannot provide an introduction to R, it is hopefully detailed enough to provide a novice R user with enough hints to perform diagnostic meta-analysis along the lines of it. Free introductions to R are available on the homepage of the R project (\href{http://www.r-project.org/}).
+
+\section{Entering data}
+Primary diagnostic studies observe the result of a \emph{gold standard} procedure which defines the presence or absence of a \emph{condition}, and the result of a  \emph{diagnostic test} (typically some kind of low cost procedure, or at least one that is less invasive than the gold standard). Data from such a primary study could be reported in a $2\times2$, see Table \ref{2times2}.
+
+\begin{table}[h]\caption{Data from the $i$th study in a $2\times2$ table}\label{2times2}
+\begin{center}
+\begin{tabular}[tbp]{lcc}\thickline
+  		&with condition &without condition \\
+\hline
+Test positive	& $y_i$		& $z_i$ \\
+Test negative	& $m_i-y_i$ 	&$n_i-z_i$\\ 
+\hline
+Total&$m_i$&$n_i$\\ \hline
+\end{tabular}
+\end{center}
+
+
+The numbers $y_i$ and $z_i$ are the numbers of true-positives (TP) and false positives (FP), respectively, and $m_i-y_i$ and $n_i-z_i$ are the numbers of false negatives (FN) and true negatives (TN). Often derived measures of diagnostic accuracy are calculated from 2$\times$2 tables. Using the notation in Table \ref{2times2}, one can calculate
+
+\begin{eqnarray}
+\text{sensitivity}_i  &=& \frac{y_i}{m_i}\\
+\text{specificity}_i  &=& \frac{n_i - z_i}{n_i}\\
+\text{false positive rate}_i &=& \frac{z_i}{n_i}.
+\end{eqnarray}
+
+The \texttt{mada} package needs the 2$\times$2 tables. We can use R to calculate the table given specificities or sensitivities if the sample size in each group is known (sometimes there is insufficient data to reconstruct the 2$\times$2 table). The above formulae for the sensitivity for example implies that
+\[
+y_i = m_i\text{sensitivity}_i.
+\]
+If a primary study reports a sensitivity of .944 and that there were 142 people with the condition, we can calculate $y$ by
+<<>>=
+y <- 142 * .944 
+y
+@
+Since this is not an integer, we need to round it to the nearest integer
+<<>>=
+round(y)
+@
+Let us now assume that the number of TP, FP, FN and TN is known for each primary study. A good way to organise information in R is to use \emph{data frames}, which can hold different variables. In our case each row of the data frame corresponds to one primary study. As an example we enter the data from six studies from the AUDIT-C meta-analysis of (TODO: Zitat) into a data frame
+<<>>=
+AuditC6 <- data.frame(TP = c(47, 126, 19, 36, 130, 84),
+                      FN = c(9, 51, 10, 3, 19, 2),
+                      FP = c(101, 272, 12, 78, 211, 68),
+                      TN = c(738, 1543, 192, 276, 959, 89))
+AuditC6
+@
+It is convenient to store not only the observed frequencies, but also the study names in the same data frame. The following command shows how to do this for our shortened example:
+<<>>=
+AuditC6$names <- c("Study 1","Study 2","Study 4","Study 4","Study 5","Study 6")
+@
+The full data set with 14 studies is part of \texttt{mada}; we attach the \texttt{mada} package, load the data set and have a look at it:
+<<>>=
+library(mada)
+data(AuditC)
+AuditC
+@
+In the following we will use the \texttt{AuditC} data set as a running example. The reader is encouraged though to see what happens if only the first 6 studies are used in the subsequent calculations.
+
+\section{Descriptive statistics}
+Descriptive statistics for 
+
+
+\section{Univariate Approaches}
+
+\section{A bivariate approach}
+
+\section{Concluding remarks}
+
+\bibliography
+
+\end{document}
