@@ -14,13 +14,14 @@ Meta-Analyisis of univariate measures of diagnostic accuracy
 The classic strategy to meta-analysis of diagnostic accuracy data is to pool a univariate measure of accuracy like the diagnostic odds ratio, the positive likelihood ratio or the negative likelihood ratio. For fixed effect estimation a Mantel-Haenszel estimator is implemented and for random effect estimation a DerSimonian-Laird estimator is available.
 }
 \usage{
-madauni(x, type = "DOR", method = "DSL", suppress = TRUE)
+madauni(x, type = "DOR", method = "DSL", suppress = TRUE, ...)
 }
 \arguments{
   \item{x}{any object that can be converted to a data frame with integer variables \code{TP}, \code{FN}, \code{FP} and \code{TN}, alternatively a matrix with column names including \code{TP}, \code{FN}, \code{FP} and \code{TN}.}
   \item{type}{character, what effect size should be pooled? Either \code{"DOR"}, \code{"posLR"} or \code{"negLR"}.}
   \item{method}{character, method of estimation. Either \code{"MH"} or \code{"DSL"}.}
   \item{suppress}{logical, should warnings produced by the internal call to \code{\link{madad}} be suppressed?}
+  \item{...}{further arguments to be passed on to \code{\link{madad}}, for example \code{correction.control}.}
 }
 \details{
 The Mantel-Haenszel method performs fixed effect estimation of the effect sizes. For the DOR the variance of this estimator is calculated according to Robins et al. (1986) and for the likelihood ratios the variance is based on Greenland et al. (1985).

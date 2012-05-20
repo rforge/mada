@@ -15,10 +15,10 @@ Methods for the class \code{madauni}.
 Various methods for the output of the function \code{\link{madauni}}. Also the default method \code{\link{confint}} works for this class.
 }
 \usage{
-print.madauni(x, digits = 3, ...)
-vcov.madauni(object, ...)
-summary.madauni(object, level = 0.95, ...)
-print.summary.madauni(x, digits = 3, ...)
+\method{print}{madauni}(x, digits = 3, ...)
+\method{vcov}{madauni}(object, ...)
+\method{summary}{madauni}(object, level = 0.95, ...)
+\method{print}{summary.madauni}(x, digits = 3, ...)
 }
 \arguments{
   \item{x}{An object of class \code{madauni}.}

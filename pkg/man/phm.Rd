@@ -43,7 +43,7 @@ where \eqn{\theta} is the diagnostic accuracy parameter. If homogeneity of the s
 An object of the class \code{phm} for which many standard methods are available. See \code{\link{phm-class}} for details.
 }
 \references{
-Holling, H., Boehning, W., Boehning D.(2012) \dQuote{Meta-Analysis of Diagnostic Studies based upon SROC-Curves: a Mixed Model Approach using a Proportional Hazards Model.} \emph{Statistical Modelling – an International Journal}
+Holling, H., Boehning, W., Boehning D.(2012) \dQuote{Meta-Analysis of Diagnostic Studies based upon SROC-Curves: a Mixed Model Approach using a Proportional Hazards Model.} \emph{Statistical Modelling -- an International Journal}
 }
 \author{
 Philipp Doebler <philipp.doebler@googlemail.com>, 

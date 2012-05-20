@@ -18,7 +18,7 @@ Given the frequencies of true positives, false negative, false positives and tru
 madad(x = NULL, TP, FN, FP, TN, level = 0.95, correction = 0.5, 
   correction.control = "all", method = "wilson", yates = TRUE, ...)
 
-print.madad(x, digits = 3, ...)
+\method{print}{madad}(x, digits = 3, ...)
 }
 \arguments{
   \item{x}{any object that can be converted to a data frame with integer variables \code{TP}, \code{FN}, \code{FP} and \code{TN}, alternatively a matrix with column names including \code{TP}, \code{FN}, \code{FP} and \code{TN}.}

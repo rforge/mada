@@ -1,9 +1,9 @@
 
-madauni <- function(x, type = "DOR", method = "DSL", suppress = TRUE){
+madauni <- function(x, type = "DOR", method = "DSL", suppress = TRUE, ...){
 
-if(suppress){x <- suppressWarnings(madad(x))
+if(suppress){x <- suppressWarnings(madad(x, ...))
              }else{
-               x <- madad(x)
+               x <- madad(x, ...)
              }  
   
 TP <- x$data$TP
@@ -78,7 +78,7 @@ rownames(vcov) <- paste("ln", type, collapse ="", sep ="")
 
 output <- list(coefficients = coef, vcov = vcov,  tau_sq = tau.squared, weights = weights,
                type = type, method = method, data = x$data, theta = theta, CQ = CQ, nobs = length(theta),
-               call = match.call())
+               descr = x, call = match.call())
 class(output) <- "madauni"
 output
 }# end of function madauni
