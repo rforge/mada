@@ -242,7 +242,7 @@ crosshair.reitsma <- function(x, level = 0.95, length = 0.1, pch = 1, ...){
   return(invisible(NULL))
 }
   
-plot.reitsma <- function(x, extrapolate = FALSE, level = 0.95, 
+plot.reitsma <- function(x, extrapolate = FALSE, plotsumm = TRUE, level = 0.95, 
                          ylim = c(0,1), xlim = c(0,1), pch = 1, 
                          sroclty = 1, sroclwd = 1, ...)
 {
@@ -253,10 +253,11 @@ plot.reitsma <- function(x, extrapolate = FALSE, level = 0.95,
   if(extrapolate){bound = c(0,1)}
   if(!extrapolate){bound = c(min(FPR), max(FPR))}
   plot(c(2,2), ylim = ylim, xlim = xlim, 
-       xlab = "False Positive Rate", ylab = "Sensitivity")
+       xlab = "False Positive Rate", ylab = "Sensitivity", ...)
   srocmat <- sroc(x)
   lines(srocmat[cut(srocmat[,1],bound, "withinbound") == "withinbound",], lty = sroclty, lwd = sroclwd)
-  ROCellipse(x, level = level, add = TRUE, pch = pch, ...)
+  if(plotsumm){ROCellipse(x, level = level, add = TRUE, pch = pch, ...)}
+  return(invisible(NULL))
 }
 
 
