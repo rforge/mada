@@ -63,13 +63,14 @@ forest(madauni(AuditC, type = "negLR"),
        log = FALSE, polycol = "lightgrey", pch = 19)
 
 ## Paired forest plot of sensitivities and specificities
+## Might look ugly if device region is too small
 old.par <- par()
 AuditC.d <- madad(AuditC)
 
 plot.new()
-par(fig = c(0, 0.5, 0, 1), new = TRUE)
+par(fig = c(0, 0.5, 0, 1), pty = "s", new = TRUE)
 forest(AuditC.d, type = "sens", xlab = "Sensitivity")
-par(fig = c(0.5, 1, 0, 1), new = TRUE)
+par(fig = c(0.5, 1, 0, 1), pty = "s", new = TRUE)
 forest(AuditC.d, type = "spec", xlab = "Specificity")
 
 par(old.par)

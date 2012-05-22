@@ -41,7 +41,8 @@ Objects of the class \code{\link{reitsma}} are output by the function with the s
   \item{replications}{integer, the number of replications for the Monte-Carlo SROC curve}
   \item{lambda}{numeric, the parameter lambda of the Monte-Carlo run, see details}
   \item{add}{logical, should the confidence region be added to the current plot? If set to \code{FALSE} a matrix of points of the ellipse is returned}
-  \item{extrapolate}{logical, should the sroc curve be plotted beyond the observed false positive rates?}
+  \item{extrapolate}{logical, should the SROC curve be plotted beyond the observed false positive rates?}
+  \item{plotsumm}{logical, should the summary pair of sensitivity and false positive rate together with its confidence region be plotted?}
   \item{length}{positve numeric, length of the "whiskers" of the crosshairs.}
   \item{ylim}{numeric of length 2, which section of the sensitivities to plot?}
   \item{xlim}{numeric of length 2, which section of the false positive rates to plot?}
