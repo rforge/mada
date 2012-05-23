@@ -8,7 +8,8 @@
 \usepackage{hyperref}
 
 \DeclareMathOperator{\logit}{logit}
-\DeclareMathOperator{\T}{T}
+\newcommand{\T}{\mathsf{T}}
+\newcommand{\sg}{\sigma}
 
 
 \title{Meta Analysis of Diagnositc Accuracy with \texttt{mada}}
@@ -142,7 +143,7 @@ For the AUDIT-C data, the underlying call to \texttt{prop.test} produces a warni
 <<eval=FALSE>>=
 madad(AuditC, level = 0.80)
 @
-Also note that all the output of \texttt{madad} is available for further computations if one assigns the output of \texttt{madad} to an object. For example the false positive rates with their confidence intervals can be extracted  using the \texttt{$} construct:
+Also note that all the output of \texttt{madad} is available for further computations if one assigns the output of \texttt{madad} to an object. For example the false positive rates with their confidence intervals can be extracted  using the \texttt{\$} construct:
 <<eval=FALSE>>=
 AuditC.d <- madad(AuditC)
 AuditC.d$fpr
@@ -252,9 +253,10 @@ and the variance of $\logit(\hat u_i)$ is then
 \frac{\hat u_i(1 - \hat u_i)}{n_i}.
 \]
 So on the within study level one assumes, conditional on $p_i$ and $u_i$, that the observed variation is described by these variances and a normal model; let $D_i$ denote a diagonal 2$\times$2 matrix with the two variances on the diagnoal. On the study level, one assumes that a global mean
-
-\[\mu=(\mu_1,\mu_2)^\T \]
- and covariance matrix 
+\[
+\mu=(\mu_1,\mu_2)^\T 
+\]
+and covariance matrix 
 \[
 \Sigma=\left(
 \begin{array}{cc}
@@ -281,7 +283,8 @@ Note the sensitivity and false positive rate returned in this summary are just t
 plot(fit.reitsma, sroclwd = 2,
      main = "SROC curve (bivariate model) for AUDIT-C data")
 points(fpr(AuditC), sens(AuditC), pch = 2)
-legend("bottomright", c("data", "summary estimate", "SROC", "conf. region"), pch = c(2,1,NA,NA), lwd = c(NA,NA, 2,1))
+legend("bottomright", c("data", "summary estimate", "SROC", "conf. region"), 
+       pch = c(2,1,NA,NA), lwd = c(NA,NA, 2,1))
 @
 \end{center}
 
