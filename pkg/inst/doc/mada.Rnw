@@ -6,7 +6,7 @@
 \usepackage{amsmath,color,amsthm}
 \usepackage{url}
 \usepackage{hyperref}
-\usepackage{bibtex}
+%\usepackage{biblatex}
 
 \DeclareMathOperator{\logit}{logit}
 \newcommand{\T}{\mathsf{T}}
@@ -22,7 +22,7 @@
 \maketitle
 
 \section{Introduction}
-While substantial work has been conducted on methods for diagnostic meta-analysis, it has not become a routine procedure yet. One of the reasons for this is certainly the complexity of bivariate approaches, but another reason is that standard software packages for meta-analysis, for example \emph{Comprehensive Meta-Analysis} and \emph{RevMan} (\cite{cma},\cite{revman}), do not include software to fit models appropriate for diagnostic meta-analysis. For the recommended (\cite{leeflang2008systematic}) bivariate approach of Rutter and Gatsonis (\cite{rutter2001hierarchical}) meta-analysts can use Bayesian approaches (for example in WinBUGS (\cite{lunn2000winbugs}) or OpenBUGS (lunn2009bugs)), the stata module \texttt{metandi} (\cite{harbord2010metandi}), or the SAS macro \texttt{METADAS} (\cite{takwoingi2008metadas}). So currently available software is either relatively complex (WinBUGS/OpenBUGS) or proprietary (stata, SAS).
+While substantial work has been conducted on methods for diagnostic meta-analysis, it has not become a routine procedure yet. One of the reasons for this is certainly the complexity of bivariate approaches, but another reason is that standard software packages for meta-analysis, for example \emph{Comprehensive Meta-Analysis} and \emph{RevMan} (\cite{cma},\cite{revman}), do not include software to fit models appropriate for diagnostic meta-analysis. For the recommended (\cite{leeflang2008systematic}) bivariate approach of Rutter and Gatsonis (\cite{rutter2001hierarchical}) meta-analysts can use Bayesian approaches (for example in WinBUGS (\cite{lunn2000winbugs}) or OpenBUGS (\cite{lunn2009bugs})), the stata module \texttt{metandi} (\cite{harbord2010metandi}), or the SAS macro \texttt{METADAS} (\cite{takwoingi2008metadas}). So currently available software is either relatively complex (WinBUGS/OpenBUGS) or proprietary (stata, SAS).
 
 The open source R-package \texttt{mada} provides some established and some current approaches to diagnostic meta-analysis, as well as functions to produce descriptive statistics and graphics. It is hopefully complete enough to be the only tool needed for a diagnostic meta-analysis. \texttt{mada} has been developed with an R user in mind that has used standard model fitting functions already, and a lot of the output of \texttt{mada} will look familiar to such a user. While this vignette cannot provide an introduction to R, it is hopefully detailed enough to provide a novice R user with enough hints to perform diagnostic meta-analysis along the lines of it. Free introductions to R are available on the homepage of the R project (\href{http://www.r-project.org/}. We assume that the reader is reasonably familiar with central concepts of (diagnostic) meta-analysis, like fixed and random effects models and (S)ROC curves.
 
@@ -109,7 +109,7 @@ and
 \[
 \mathrm{DOR} = \mathrm{posLR}/\mathrm{negLR} = \frac{\mathrm{TP}\mathrm{TN}}{\mathrm{FN}\mathrm{FP}}.
 \]
-All these are easily computed for each study using the \texttt{madad} function, together with their confidence intervals (Zitat auf  Deeks JJ. Systematic reviews of evaluations of diagnostic and screening tests. In Egger M, Smith GD, Altman DG (eds). Systematic Reviews in Health Care. Meta-analysis in context. London: BMJ Books; 2001:248-282.). \texttt{madad} also performs $\chi^2$ tests to assess heterogeneity of sensitivities and specificities, the null hypothesis being in both cases, that all are equal. Finally the correlation of sensitivities and false positive rates is calculated to give a hint whether the cut-off value problem is present. The following output is slightly cropped.
+All these are easily computed for each study using the \texttt{madad} function, together with their confidence intervals (\cite{deeks2001systematic}). \texttt{madad} also performs $\chi^2$ tests to assess heterogeneity of sensitivities and specificities, the null hypothesis being in both cases, that all are equal. Finally the correlation of sensitivities and false positive rates is calculated to give a hint whether the cut-off value problem is present. The following output is slightly cropped.
 <<eval=FALSE>>=
 madad(AuditC)
 @
@@ -164,7 +164,7 @@ rs <- rowSums(AuditC)
 rs <- 4 * rs/max(rs)
 crosshair(AuditC, xlim = c(0,0.6), ylim = c(0.4,1), col = 1:14, lwd = rs)
 @
-\texttt{ROCellipse} plots confidence regions which describe the uncertainty of the pair of sensitivity and false positive rate. These regions are ellipses on logit ROC space, and by backtransforming them to regular ROC space the (sometimes oddly shaped) regions are produced. By default this function will also plot the point estimates. The following example is a bit contrived: here the plotting of the point estimates is suppressed manipulating the \texttt{pch} argument, but then points are added in the next step.
+\texttt{ROCellipse} plots confidence regions which describe the uncertainty of the pair of sensitivity and false positive rate. These regions are ellipses on logit ROC space, and by back-transforming them to regular ROC space the (sometimes oddly shaped) regions are produced. By default this function will also plot the point estimates. The following example is a bit contrived: here the plotting of the point estimates is suppressed manipulating the \texttt{pch} argument, but then points are added in the next step.
 <<>>=
 ROCellipse(AuditC, pch = "")
 points(fpr(AuditC), sens(AuditC))
@@ -179,13 +179,13 @@ In analogy to the meta-analysis of the odds ratio (OR) methods for the meta-anal
 \[
 \mathrm{DOR}_i = \mu + \epsilon_i,
 \]
-where $\mu$ is true underlying DOR and the $\epsilon_i$ are independent errors with mean 0 and study specific varianz. The MH estimator is a weighted average of DORs observed in the primary studies and is robust to the presence of zero cells. It takes the form
+where $\mu$ is true underlying DOR and the $\epsilon_i$ are independent errors with mean 0 and study specific variance. The MH estimator is a weighted average of DORs observed in the primary studies and is robust to the presence of zero cells. It takes the form
 \[
 \hat \mu = \sum_i \frac{\omega_i^{MH} \mathrm{DOR}_i}{\sum_i \omega_i^{MH}},
 \]
 where $\omega_i^{MH} = \frac{z_i(m_i - y_i)}{m_i + n_i}$ are the Mantel-Haenszel weights.
 
-One obtains an estimator for a \emph{random effects} model following the approach of DerSimonian-Laird (DSL; TODO: zitat). Here the underlying model is in terms of the $\log$ DORs. One assumes
+One obtains an estimator for a \emph{random effects} model following the approach of DerSimonian and Laird (DSL; \cite{dersimonian1986meta}). Here the underlying model is in terms of the $\log$ DORs. One assumes
 \[
 \log\mathrm{DOR}_i = \mu + \epsilon_i + \delta_i,
 \]
@@ -212,10 +212,10 @@ Note that the brackets around \texttt{fit.DOR.DSL <- madauni(AuditC)} are a comp
 <<>>=
 summary(fit.DOR.DSL)
 @
-In addition to the confidence intervals, Cochran's $Q$ statistic (TODO: Zitat) can be seen and Higgins $I^2$ (TODO Zitat).
+In addition to the confidence intervals, Cochran's $Q$ statistic (\cite{cochran1954combination}) can be seen and Higgins $I^2$ (\cite{higgins2003measuring}).
 
 \subsection{Proportional hazards model approach}
-The proportional hazards model approach (PHM, TODO: Zitat) builds on the assumption of a simple form of the ROC curves. The so called \emph{Lehmann model} (TODO: Zitat) is assumed. Let $p_i$ and $u_i$ denote the $i$th study's sensitivity and false positive rate  respectively. The relationship of $p_i$ and $u_i$ is then assumed to be
+The proportional hazards model approach (PHM, \cite{boehningphm}) builds on the assumption of a simple form of the ROC curves. The so called \emph{Lehmann model} (\cite{le2006solution}) is assumed. Let $p_i$ and $u_i$ denote the $i$th study's sensitivity and false positive rate  respectively. The relationship of $p_i$ and $u_i$ is then assumed to be
 \[
 p_i = u_i^{\theta_i}, 
 \]
@@ -232,7 +232,7 @@ The $\chi^2$ test goodness of fit test rejects the assumption of homogeneity, bu
 <<>>=
 summary(fit.phm.het)
 @
-The estimation of $\theta$ results in an SROC curve (TODO: Zitate auf SROC papers); plotting this curve together with confidence bands obtained from the confidence interval of $\theta$ in the summary is simple (we also add the original data on ROC space with confidence regions and only plot a portion of ROC space):
+The estimation of $\theta$ results in an SROC curve (see \cite{walter2002properties}, \cite{jones2005summary} for more background on SROC methods); plotting this curve together with confidence bands obtained from the confidence interval of $\theta$ in the summary is simple (we also add the original data on ROC space with confidence regions and only plot a portion of ROC space):
 \begin{center}
 <<fig = TRUE>>=
 plot(fit.phm.het, xlim = c(0,0.6), ylim = c(0.4,1))
@@ -243,9 +243,9 @@ Note that the SROC curve is not extrapolated beyond the range of the original da
 
 
 \section{A bivariate approach}
-Typically the sensitivity and specificity of a diagnostic test depend on each other through a cut-off value: as the cut-off is varied to, say, increase the sensitivity, the specificity often decreases. So in a meta-analytic setting one will often observe (negatively) correlated sensitivities and specificities. This observation can (equivalently) also be state as a (positive) correlation of sensitivities and false positive rates. Since these two quantities are interrelated, bivariate approaches to the meta-analysis of diagnostic accuracy have been quite successful (TODO: zitate). 
+Typically the sensitivity and specificity of a diagnostic test depend on each other through a cut-off value: as the cut-off is varied to, say, increase the sensitivity, the specificity often decreases. So in a meta-analytic setting one will often observe (negatively) correlated sensitivities and specificities. This observation can (equivalently) also be state as a (positive) correlation of sensitivities and false positive rates. Since these two quantities are interrelated, bivariate approaches to the meta-analysis of diagnostic accuracy have been quite successful (\cite{rutter2001hierarchical}, \cite{van2002advanced}, \cite{reitsma2005bivariate}, \cite{harbord2007unification}, \cite{arends2008bivariate}).
 
-One typically assumes a binomial model conditional on a primary studies true sensitivity and false positive rates, and a bivariate normal model for the logit-transformed pairs of sensitivities and false positive rates. There are two ways to cast the final model: as a non-linear mixed model (TODO: Zitat) or as linear mixed model (TODO: Zitat). The latter approach is implemented in \texttt{mada}'s \texttt{reitsma} function, so we give some more details. Let $p_i$ and $u_i$ denote the $i$th study's true sensitivity and false positive rate respectively, and let $\hat p_i$ and $\hat u_i$ denote their estimates from the observed frequencies. Then, since a binomial model is assumed conditional on the true $p_i$, the variance of $\logit(\hat p_i)$ can be approximated by
+One typically assumes a binomial model conditional on a primary studies true sensitivity and false positive rates, and a bivariate normal model for the logit-transformed pairs of sensitivities and false positive rates. There are two ways to cast the final model: as a non-linear mixed model or as linear mixed model (see for example \cite{arends2008bivariate}). The latter approach is implemented in \texttt{mada}'s \texttt{reitsma} function, so we give some more details. Let $p_i$ and $u_i$ denote the $i$th study's true sensitivity and false positive rate respectively, and let $\hat p_i$ and $\hat u_i$ denote their estimates from the observed frequencies. Then, since a binomial model is assumed conditional on the true $p_i$, the variance of $\logit(\hat p_i)$ can be approximated by
 \[
 \frac{\hat p_i(1 - \hat p_i)}{m_i},
 \]
@@ -253,7 +253,7 @@ and the variance of $\logit(\hat u_i)$ is then
 \[
 \frac{\hat u_i(1 - \hat u_i)}{n_i}.
 \]
-So on the within study level one assumes, conditional on $p_i$ and $u_i$, that the observed variation is described by these variances and a normal model; let $D_i$ denote a diagonal 2$\times$2 matrix with the two variances on the diagnoal. On the study level, one assumes that a global mean
+So on the within study level one assumes, conditional on $p_i$ and $u_i$, that the observed variation is described by these variances and a normal model; let $D_i$ denote a diagonal 2$\times$2 matrix with the two variances on the diagonal. On the study level, one assumes that a global mean
 \[
 \mu=(\mu_1,\mu_2)^\T 
 \]
@@ -277,7 +277,7 @@ The \texttt{print} method for \texttt{reitsma} objects has a scarce output. More
 <<>>=
 summary(fit.reitsma)
 @
-Note the sensitivity and false positive rate returned in this summary are just the back transformed $\mu_1$ and $\mu_2$. One can then proceed to plot the SROC curve of this model. By default the point estimate of the pair of sensitivity and false positive rate is also plotted together with a confidence region. In the following example the SROC curve is plotted a bit thicker using the \texttt{sroclwd} argument, a caption is added to the plot and also the data and a legend. By default the SROC curve is not extrapolated beyond the range of the orginal data.
+Note the sensitivity and false positive rate returned in this summary are just the back transformed $\mu_1$ and $\mu_2$. One can then proceed to plot the SROC curve of this model. By default the point estimate of the pair of sensitivity and false positive rate is also plotted together with a confidence region. In the following example the SROC curve is plotted a bit thicker using the \texttt{sroclwd} argument, a caption is added to the plot and also the data and a legend. By default the SROC curve is not extrapolated beyond the range of the original data.
 
 \begin{center}
 <<fig=TRUE>>=
@@ -290,7 +290,7 @@ legend("bottomright", c("data", "summary estimate", "SROC", "conf. region"),
 \end{center}
 
 \subsection{Using \texttt{mada} to compare SROC curves}
-We show how to compare SROC curves. (TODO: Zitat) conducted a meta-analysis to (among other things) investigate the efficacy of self administered and interviewer administered questionnaires to detect nicotine use. The data sets \texttt{SAQ} and \texttt{IAQ} are the respective subsets of this data. First one fits bivariate models to the data sets:
+We show how to compare SROC curves. \cite{patrick1994validity} conducted a meta-analysis to (among other things) investigate the efficacy of self administered and interviewer administered questionnaires to detect nicotine use. The data sets \texttt{SAQ} and \texttt{IAQ} are the respective subsets of this data. First one fits bivariate models to the data sets:
 <<>>=
 data(IAQ)
 data(SAQ)
