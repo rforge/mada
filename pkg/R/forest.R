@@ -50,7 +50,7 @@ forest.madauni <- function(x, log = TRUE, ...){
 }
 
 forest.default <- 
-function(x, ci, plotci = TRUE, main = "Forest Plot", xlab = NULL,
+function(x, ci, plotci = TRUE, main = "Forest plot", xlab = NULL,
           digits = 2L,  snames = NULL, 
           subset = NULL, pch = 15, cex = 1, cipoly = NULL, polycol = NA,
           ...) 
