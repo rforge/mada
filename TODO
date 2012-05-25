@@ -1,0 +1,4 @@
+TODO list for package mada:
+
+1) add AUC method for all relevant classes (reitsma, phm, maybe madauni for DOR)
+2) add covariates
