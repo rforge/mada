@@ -7,7 +7,7 @@
 \concept{meta-analysis}
 
 \title{
-Fit the bivariate model of Reitsma et al. (2005) for diagnostic meta-analysis.
+Fit the bivariate model of Reitsma et al. (2005).
 }
 \description{
 The function fits the bivariate model of Reitsma et al. (2005) that Harbord et al. (2007) have shown to be equivalent to the HSROC of Rutter&Gatsonis (2001). We specify the model as a linear mixed model with known variances of the random effects, similar to the computational approach by Reitsma et al. (2005). Variance components are estimated by restricted maximum likelihood (REML) as a default but ML estimation is available as well.
