@@ -13,7 +13,7 @@ Forest plot for univariate measures
 Produce a forest plot. Includes graphical summary of results if applied to output of suitable model-fitting function.
 }
 \usage{
-\method{forest}{default}(x, ci, plotci = TRUE, main = "Forest Plot", 
+\method{forest}{default}(x, ci, plotci = TRUE, main = "Forest plot", 
           xlab = NULL, digits = 2L,  snames = NULL, subset = NULL, 
           pch = 15, cex = 1, cipoly = NULL, polycol = NA, ...)
 \method{forest}{madad}(x, type = "sens", log = FALSE, ...)
