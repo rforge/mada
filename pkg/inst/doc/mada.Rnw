@@ -105,7 +105,7 @@ In the analysis of data in 2$\times$2 tables zero cells often lead to problems o
 \section{Descriptive statistics}
 Descriptive statistics for a data set include the sensitivity, specificity and false-positive rate of the primary studies and also their positive and negative likelihood ratios ($\mathrm{LR}_+, \mathrm{LR}_-$), and their diagnostic odds ratio (DOR; \cite{glas2003diagnostic}). These are defined as
 \[
-\\mathrm{LR}_+ = \frac{p}{u} = \frac{\text{sensitivity}}{\text{false positive rate}},
+\mathrm{LR}_+ = \frac{p}{u} = \frac{\text{sensitivity}}{\text{false positive rate}},
 \]
 \[
 \mathrm{LR}_- = \frac{1-p}{1-u},
@@ -235,7 +235,7 @@ dev.off()
 
 
 \section{Univariate Approaches}
-Before the advent of the bivariate approaches by \cite{rutter2001hierarchical} and \cite{reitsma2005bivariate}, some univariate approaches to the meta-analysis of diagnostic accuracy were more popular. Bivariate approaches can only be recommended though, if the sample size is reasonably large; the bivariate model of \cite{reitsma2005bivariate} for example has 5 parameters, which would clearly be too much for a handful of studies. Hence \texttt{mada} provides some univariate methods. Since pooling sensitivities or specificities can be misleading (\cite{gatsonis2006meta}), options for the univariate meta-analysis of these are not provided. \texttt{mada} does provide approaches for the DOR (\cite{glas2003diagnostic}), the positive and negative likelihood ratios, and $\theta$, the accuracy parameter of the proportional hazards model for diagnostic meta-analysis (\cite{boehningphm}). In this vignette we explain the details on the DOR methodology and the methods for $\theta$.
+Before the advent of the bivariate approaches by \cite{rutter2001hierarchical} and \cite{reitsma2005bivariate}, some univariate approaches to the meta-analysis of diagnostic accuracy were more popular.  Bivariate approaches cannot be recommended if the sample size is too small. The bivariate model of \cite{reitsma2005bivariate} for example has 5 parameters, which would clearly be too much for a handful of studies. Hence \texttt{mada} provides some univariate methods. Since pooling sensitivities or specificities can be misleading (\cite{gatsonis2006meta}), options for the univariate meta-analysis of these are not provided. \texttt{mada} does provide approaches for the DOR (\cite{glas2003diagnostic}), the positive and negative likelihood ratios, and $\theta$, the accuracy parameter of the proportional hazards model for diagnostic meta-analysis (\cite{boehningphm}). In this vignette we explain the details on the DOR methodology and the methods for $\theta$.
 
 \subsection{Diagnostic odds ratio}
 In analogy to the meta-analysis of the odds ratio (OR) methods for the meta-analysis of the DOR can be developed (\cite{glas2003diagnostic}). For the \emph{fixed effects} case a Mantel-Haenszel (MH; see for example \cite{deeks2001systematic}) is provided by \texttt{mada}. The underlying fixed effects model has the form
@@ -310,8 +310,11 @@ plot(fit.phm.het, xlim = c(0,0.6), ylim = c(0.4,1))
 ROCellipse(AuditC, add = TRUE)
 @
 \end{center}
-Note that the SROC curve is not extrapolated beyond the range of the original data. 
-
+Note that the SROC curve is not extrapolated beyond the range of the original data. The area under the SROC curve, the AUC, is also part of the summary above. For the PHM it is calculated by
+\[
+\mathrm{AUC} = \frac{1}{\theta + 1},
+\]
+and by the same relation a confidence interval for the AUC can be computed from the confidence interval for $\theta$. The \texttt{mada} package also offers the \texttt{AUC} function to calculate the AUC of other SROC curves which uses the trapezoidal rule.
 
 \section{A bivariate approach}
 Typically the sensitivity and specificity of a diagnostic test depend on each other through a cut-off value: as the cut-off is varied to, say, increase the sensitivity, the specificity often decreases. So in a meta-analytic setting one will often observe (negatively) correlated sensitivities and specificities. This observation can (equivalently) also be state as a (positive) correlation of sensitivities and false positive rates. Since these two quantities are interrelated, bivariate approaches to the meta-analysis of diagnostic accuracy have been quite successful (\cite{rutter2001hierarchical}, \cite{van2002advanced}, \cite{reitsma2005bivariate}, \cite{harbord2007unification}, \cite{arends2008bivariate}).
@@ -380,7 +383,7 @@ points(fpr(SAQ), sens(SAQ), pch = 2, cex = 0.5)
 legend("bottomright", c("IAQ", "SAQ"), pch = 1:2, lty = 1:2)
 @
 \end{center}
-The summary estimates are well separated, though the confidence regions slightly overlap. It would nevertheless be save to conclude that IAQ is a more reliable way to measure smoking than SAQ.
+The summary estimates are well separated, though the confidence regions slightly overlap. It would nevertheless be safe to conclude that IAQ is a more reliable way to measure smoking than SAQ.
 
 \section{Further development of \texttt{mada}}
 In the future \texttt{mada} will provide functions for meta regression of diagnostic accuracy and will support the mixture approach of \cite{holling2011likelihood} to the meta-analysis of $\theta$ as well as the bivariate approach based on the $t_\alpha$ transformation of \cite{doebler2012mixed}.

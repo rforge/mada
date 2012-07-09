@@ -197,9 +197,10 @@ confints <- cbind(object$coefficients, confint(object))
 colnames(confints)[1] <- "Estimate"
 confints <- rbind(inv.trafo(1,confints[1:2,]),confints)
 rownames(confints)[1:2] <- c("Sens", "FPR")
+AUC <- AUC(object)
 
 res <- list(call=object$call,
-confints = confints)
+confints = confints, AUC = AUC)
 class(res) <- "summary.reitsma"
 res
 }
@@ -210,6 +211,8 @@ cat("Call:\n")
 print(x$call)
 cat("\n")
 print(x$confints)
+cat("\n")
+cat(c("AUC: ",as.character(round(x$AUC$AUC,3))))
 }
 
 vcov.reitsma <- function(object, ...){object$vcov}
