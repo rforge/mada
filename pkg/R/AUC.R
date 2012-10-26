@@ -29,16 +29,4 @@ AUC.phm <- function(x, level = 0.95, ...){
   return(ret)
 }
 
-AUC.reitsma <- function(x, fpr = 1:99/100, ...){
-  estimate <- x$coefficients
-  alpha.sens <- 1
-  alpha.fpr <- 1
-  if(length(estimate) == 7){alpha.sens <- estimate[6]; alpha.fpr <- estimate[7]}
-  mu1 <- estimate[1]
-  mu2 <- estimate[2]
-  sigma2 <- estimate[4]
-  sigma <- estimate[5]  
-  rsroc <- function(x){mada:::calc.sroc(x, alpha.sens, alpha.fpr, mu1, mu2, sigma2, sigma)}
-  AUC.default(rsroc, fpr = fpr, ...)
-}
-
+## AUC.reitsma in file reitsma.R
