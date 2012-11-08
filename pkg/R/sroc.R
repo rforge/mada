@@ -21,16 +21,15 @@ sroc2 <- function(fit, fpr = 1:99/100){
 mcsroc <- function(fit, ...) UseMethod("mcsroc")
 
 mcsroc<- function(fit, replications = 10000, lambda = 100){
-  if(!attr(fit$logLik,"df") == 5){stop("AUC can not be calculated for meta-regression")}
+  if(!attr(fit$logLik,"df") == 5){stop("SROC can not be calculated for meta-regression")}
   estimate <- fit$coefficients
   alpha.sens <- fit$alphasens
   alpha.fpr <- fit$alphafpr
-  mu1 <- estimate[1]
-  mu2 <- estimate[2]
+  mu <- estimate[1:2]
   Sigma <- fit$Psi
   stud.pars <- rmvnorm(replications, mu, Sigma)
-  sens <- inv.trafo(alpha.sens, stud.pars[,1])
-  fpr <- inv.trafo(alpha.fpr, stud.pars[,2])
+  sens <- mada:::inv.trafo(alpha.sens, stud.pars[,1])
+  fpr <- mada:::inv.trafo(alpha.fpr, stud.pars[,2])
   N.sens <- rpois(replications, lambda)
   N.fpr <- rpois(replications, lambda)
   TN <- rbinom(replications, N.sens, sens)

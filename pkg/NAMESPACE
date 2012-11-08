@@ -18,6 +18,7 @@ export("sens")
 export("fpr")
 export("spec")
 export("forest")
+export("talpha")
 
 S3method(print, reitsma)
 S3method(AUC, reitsma)

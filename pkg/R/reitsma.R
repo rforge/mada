@@ -1,4 +1,4 @@
-reitsma <- function(X, ...) UseMethod("reitsma")
+reitsma <- function(data, ...) UseMethod("reitsma")
 
 reitsma.default <-
 function(data = NULL, subset=NULL, formula = NULL,
@@ -295,10 +295,10 @@ plot.reitsma <- function(x, extrapolate = FALSE, plotsumm = TRUE, level = 0.95,
   return(invisible(NULL))
 }
 
-confint.reitsma <- function (object, level = 0.95, ...) 
+confint.reitsma <- function (object, parm, level = 0.95, ...) 
 {
   cf <- as.numeric(coef(object))
-  parm <- colnames(vcov(object))
+  if(missing(parm)){parm <- colnames(vcov(object))}
 
   a <- (1 - level)/2
   a <- c(a, 1 - a)

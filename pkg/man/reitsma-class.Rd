@@ -23,7 +23,7 @@ Methods for \code{reitsma} objects.
 Objects of the class \code{\link{reitsma}} are output by the function with the same name. Apart from standard methods the functions \code{sroc}, \code{mcsroc} and \code{ROCellipse} provide SROC curves and confidence regions for fits.
 }
 \usage{
-\method{print}{reitsma}(x, ...)
+\method{print}{reitsma}(x, digits = 4, ...)
 \method{summary}{reitsma}(object, level = 0.95, ...)
 \method{sroc}{reitsma}(fit, fpr = 1:99/100, ...)
 \method{mcsroc}{reitsma}(fit, fpr = 1:99/100, replications = 10000, lambda = 100, ...)
@@ -36,6 +36,7 @@ Objects of the class \code{\link{reitsma}} are output by the function with the s
   \item{x}{a \code{reitsma} object.}
   \item{object}{a \code{reitsma} object.}
 \item{fit}{a \code{reitsma} object.}
+\item{digits}{number of decimal digits to print.}
   \item{level}{numeric, the level for calculations of confidence intervals (\code{summary}) or regions (\code{ROCellipse})}
   \item{fpr}{numeric, the false positives rates for which to calculate the predicted sensitivities}
   \item{replications}{integer, the number of replications for the Monte-Carlo SROC curve}
