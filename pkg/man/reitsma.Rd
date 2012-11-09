@@ -75,6 +75,12 @@ data(Dementia)
 (fit <- reitsma(Dementia))
 summary(fit)
 plot(fit)
+
+## Meta-Regression
+data(smoking)
+## use type of questionnaire as covariate
+(fit <- reitsma(smoking, formula = cbind(tsens, tfpr) ~ type))
+summary(fit) ## sensitivities significantly lower for SAQ!
 }
 
 \keyword{regression}

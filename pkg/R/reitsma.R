@@ -234,7 +234,10 @@ print.summary.reitsma <- function (x, digits = 4, ...){
   if(!is.null(x$AUC)){
     cat(c("AUC: ",as.character(round(x$AUC$AUC,3))))
     cat("\n")  
+    cat(c("Partial AUC (restricted to observed FPRs and normalized): ",as.character(round(x$AUC$pAUC,3))))
+    cat("\n")  
   }
+    
   
 }
   
@@ -322,7 +325,12 @@ AUC.reitsma <- function(x, fpr = 1:99/100, ...){
   sigma2 <- x$Psi[2,2]
   sigma <- x$Psi[1,2]  
   rsroc <- function(x){mada:::calc.sroc(x, alpha.sens, alpha.fpr, mu1, mu2, sigma2, sigma)}
-  mada:::AUC.default(rsroc, fpr = fpr, ...)
+  AUC <- mada:::AUC.default(rsroc, fpr = fpr, ...)
+  obsfprrange <- range(fpr(x$freqdata))
+  obsfpr <- seq(from = obsfprrange[1], to = obsfprrange[2], length.out = 99)
+  pAUC <- mada:::AUC.default(rsroc, fpr = obsfpr, ...)
+  names(pAUC) <- c("pAUC")
+  return(c(AUC,pAUC))
 }
 
 
