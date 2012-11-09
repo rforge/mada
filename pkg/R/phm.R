@@ -185,8 +185,9 @@ cat(c("BIC: ", round(AIC(x$object, k = log(x$object$nobs)),1), "\n"))
 print(x$object$chi_sq_test)
 
 cat("\n")
-auc <- c(x$AUC$AUC, x$AUC$ci)
+auc <- c(x$AUC$AUC, x$AUC$ci, x$AUC$pAUC, x$AUC$pci)
 names(auc)[1] <- "AUC"
+names(auc)[4] <- "pAUC"
 print(round(auc,3))
 }
 

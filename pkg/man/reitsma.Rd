@@ -80,7 +80,7 @@ plot(fit)
 data(smoking)
 ## use type of questionnaire as covariate
 (fit <- reitsma(smoking, formula = cbind(tsens, tfpr) ~ type))
-summary(fit) ## sensitivities significantly lower for SAQ!
+summary(fit) ## sensitivities significantly lower for SAQ
 }
 
 \keyword{regression}

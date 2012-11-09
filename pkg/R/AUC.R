@@ -23,8 +23,13 @@ AUC.phm <- function(x, level = 0.95, ...){
   theta <- coef(x)[1]
   ci <- confint(x, level = level)["theta",]
   AUC <- 1/(theta+1)
-  ci <- 1/(ci+1)
-  ret <- list(AUC = AUC, ci = ci)
+  AUCci <- 1/(ci+1)
+  obsfprrange <- range(fpr(x$data))
+  pAUC <- function(theta,a,b){1/(theta+1)*(b^{theta+1}-a^{theta+1})/(b-a)}
+  ret <- list(AUC = AUC, ci = AUCci, 
+              pAUC = pAUC(theta,obsfprrange[1],obsfprrange[2]), 
+              pci = c(pAUC(ci[1],obsfprrange[1],obsfprrange[2]),
+                      pAUC(ci[2],obsfprrange[1],obsfprrange[2])))
   class(ret) <- "AUC"
   return(ret)
 }
