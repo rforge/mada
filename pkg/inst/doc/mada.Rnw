@@ -6,6 +6,7 @@
 \usepackage{amsmath,color,amsthm}
 \usepackage{url}
 \usepackage{hyperref}
+\usepackage[utf8]{inputenc}
 %\usepackage{biblatex}
 
 \DeclareMathOperator{\logit}{logit}
@@ -28,7 +29,7 @@
 \section{Introduction}
 While substantial work has been conducted on methods for diagnostic meta-analysis, it has not become a routine procedure yet. One of the reasons for this is certainly the complexity of bivariate approaches, but another reason is that standard software packages for meta-analysis, for example \emph{Comprehensive Meta-Analysis} and \emph{RevMan} (\cite{cma},\cite{revman}), do not include software to fit models appropriate for diagnostic meta-analysis. For the recommended (\cite{leeflang2008systematic}) bivariate approach of Rutter and Gatsonis (\cite{rutter2001hierarchical}) meta-analysts can use Bayesian approaches (for example in WinBUGS (\cite{lunn2000winbugs}) or OpenBUGS (\cite{lunn2009bugs})), the stata module \texttt{metandi} (\cite{harbord2010metandi}), or the SAS macro \texttt{METADAS} (\cite{takwoingi2008metadas}). So currently available software is either relatively complex (WinBUGS/OpenBUGS) or proprietary (stata, SAS).
 
-The open source R-package \texttt{mada} provides some established and some current approaches to diagnostic meta-analysis, as well as functions to produce descriptive statistics and graphics. It is hopefully complete enough to be the only tool needed for a diagnostic meta-analysis. \texttt{mada} has been developed with an R user in mind that has used standard model fitting functions already, and a lot of the output of \texttt{mada} will look familiar to such a user. While this vignette cannot provide an introduction to R, it is hopefully detailed enough to provide a novice R user with enough hints to perform diagnostic meta-analysis along the lines of it. Free introductions to R are available on the homepage of the \href{http://www.r-project.org/}{R project}. We assume that the reader is familiar with central concepts of meta-analysis, like fixed and random effects models (for example \cite{borenstein2009introductionto}) and ideas behind diagnostic accuracy meta-analysis and (S)ROC curves (a starting points could be \cite{sutton2000methods}, \cite{walter2002properties}, \cite{jones2005summary} or \cite{leeflang2008systematic}).
+The open source R-package \texttt{mada} provides some established and some current approaches to diagnostic meta-analysis, as well as functions to produce descriptive statistics and graphics. It is hopefully complete enough to be the only tool needed for a diagnostic meta-analysis. \texttt{mada} has been developed with an R user in mind that has used standard model fitting functions already, and a lot of the output of \texttt{mada} will look familiar to such a user. While this vignette cannot provide an introduction to R, it is hopefully detailed enough to provide a novice R user with enough hints to perform diagnostic meta-analysis along the lines of it. Free introductions to R are available on the homepage of the \href{http://www.r-project.org/}{R project}. We assume that the reader is familiar with central concepts of meta-analysis, like fixed and random effects models (for example \cite{borenstein2009introductionto}) and ideas behind diagnostic accuracy meta-analysis and (S)ROC curves (starting points could be \cite{sutton2000methods}, \cite{walter2002properties}, \cite{jones2005summary} or \cite{leeflang2008systematic}).
 
 \section{Obtaining \texttt{mada}}
 Once R is installed and an internet connection is available, the package can be installed from CRAN on most systems by typing
@@ -406,9 +407,9 @@ We generate detailed output by:
 <<>>=
 summary(fit.smoking)
 @
-The $z$-value for the regression coefficient for the sensitivities is significant, indicating that the interviewer administered questionnaires offer a better sensitivity. Interestingly the point estimate for the  false-positive rates does not indicate any effect.
+This output can be interpreted as follows: The $z$-value for the regression coefficient for the sensitivities is significant, indicating that the interviewer administered questionnaires offer a better sensitivity. Interestingly the point estimate for the  false-positive rates does not indicate any effect.
 
-Once meta-regression is used, one can not reasonably plot SROC curves, since fixed values for the covariates would have to be supplied to do so. Also (global) AUC values do not make sense.
+Note that once meta-regression is used, one cannot reasonably plot SROC curves, since fixed values for the covariates would have to be supplied to do so. Also (global) AUC values do not make sense.
 
 \subsection{Transformations beyond the logit}
 All bivariate approaches explained so far use the conventional logit transformation. The \texttt{reitsma} function offers the parametric $t_\alpha$ family (\cite{doebler2012mixed}) of transformations as alternatives. The family is defined by
