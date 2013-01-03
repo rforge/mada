@@ -30,7 +30,8 @@ Objects of the class \code{\link{reitsma}} are output by the function with the s
 \method{ROCellipse}{reitsma}(x, level = 0.95, add = FALSE, pch = 1, ...)
 \method{crosshair}{reitsma}(x, level = 0.95, length = 0.1, pch = 1, ...)
 \method{plot}{reitsma}(x, extrapolate = FALSE, plotsumm = TRUE, level = 0.95, 
-     ylim = c(0,1), xlim = c(0,1), pch = 1, sroclty = 1, sroclwd = 1, ...)
+     ylim = c(0,1), xlim = c(0,1), pch = 1, sroclty = 1, sroclwd = 1, 
+     predict = FALSE, predlty = 3, predlwd = 1, ...)
 }
 \arguments{
   \item{x}{a \code{reitsma} object.}
@@ -50,6 +51,10 @@ Objects of the class \code{\link{reitsma}} are output by the function with the s
   \item{pch}{integer, symbol for the pair of mean sensitivity and false positive rate}
   \item{sroclty}{integer, line type of the SROC curve}
   \item{sroclwd}{integer, line width of the SROC curve}  
+  \item{predict}{logical, draw prediction region?}  
+  \item{predlty}{integer, line type of prediction region}
+  \item{predlwd}{integer, line width of prediction region}  
+
   \item{...}{arguments to be passed on to other functions}
 }
 \details{

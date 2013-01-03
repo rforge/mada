@@ -1,4 +1,6 @@
 TODO list for package mada:
 
-1) add AUC method for all relevant classes (reitsma, phm, maybe madauni for DOR)
-2) add covariates
+2) Scale of forest plots
+3) Reitsma output umrechnen in HSROC
+4) Output von summary.reitsma mit metandi abgleichen
+5) cooksd??

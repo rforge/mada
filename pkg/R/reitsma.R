@@ -248,7 +248,7 @@ vcov.reitsma <- function(object, ...){object$vcov}
 logLik.reitsma <- function(object, ...){object$logLik}
 
 sroc.reitsma <- function(fit, fpr = 1:99/100, ...){
-  sroc2(fit, fpr=fpr, ...)
+  mada:::sroc2(fit, fpr=fpr, ...)
 }
 
 mcsroc.reitsma <- function(fit, fpr = 1:99/100, replications = 10000, lambda = 100, ...){
@@ -256,7 +256,7 @@ mcsroc.reitsma <- function(fit, fpr = 1:99/100, replications = 10000, lambda = 1
 }
   
 ROCellipse.reitsma <- function(x, level = 0.95, add = FALSE, pch = 1, ...){
-  ROC.ellipse2(x, nobs = x$nobs/2, conf.level = level, add = add, pch = pch, ...)
+  mada:::ROC.ellipse2(x, nobs = x$nobs/2, conf.level = level, add = add, pch = pch, ...)
 }
 
 crosshair.reitsma <- function(x, level = 0.95, length = 0.1, pch = 1, ...){
@@ -278,7 +278,9 @@ crosshair.reitsma <- function(x, level = 0.95, length = 0.1, pch = 1, ...){
   
 plot.reitsma <- function(x, extrapolate = FALSE, plotsumm = TRUE, level = 0.95, 
                          ylim = c(0,1), xlim = c(0,1), pch = 1, 
-                         sroclty = 1, sroclwd = 1, ...)
+                         sroclty = 1, sroclwd = 1, 
+                         predict = FALSE, predlty = 3, predlwd = 1,
+                         ...)
 {
   plot(c(2,2), ylim = ylim, xlim = xlim, 
        xlab = "False Positive Rate", ylab = "Sensitivity", ...)
@@ -296,6 +298,19 @@ plot.reitsma <- function(x, extrapolate = FALSE, plotsumm = TRUE, level = 0.95,
     warning("Not plotting any SROC for meta-regression")
   }
   if(plotsumm){ROCellipse(x, level = level, add = TRUE, pch = pch, ...)}
+  
+  if(predict){
+    alpha.sens <- x$alphasens
+    alpha.fpr <- x$alphafpr
+    mu <- x$coefficients["(Intercept)",]
+    Sigma <- x$Psi
+    talphaellipse <- ellipse(Sigma, centre = mu, level = level)
+    predellipse <- matrix(0, ncol = 2, nrow = nrow(talphaellipse))
+    predellipse[,1] <- mada:::inv.trafo(alpha.fpr, talphaellipse[,2])
+    predellipse[,2] <- mada:::inv.trafo(alpha.sens, talphaellipse[,1])
+    lines(predellipse, lty = predlty, lwd = predlwd)
+}
+  
   return(invisible(NULL))
 }
 
