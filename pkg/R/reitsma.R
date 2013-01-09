@@ -38,7 +38,7 @@ if(is.null(data) & !is.character(c(TP,FP,TN,FN))){
 }
 
 freqdata <- cbind(TP,FN,FP,TN)
-mada:::checkdata(freqdata)
+checkdata(freqdata)
 
 N <- length(TP)	
 	

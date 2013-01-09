@@ -31,7 +31,8 @@ checkdata <- function(X, nrowwarn = 5){
   X <- as.data.frame(X)
   if(!all(c("TP","FN","FP","TN") %in% names(X))){
     stop("Data frame or matrix must have columns labelled TP, FN, FP and TN.")}
-  if(!identical(round(X),X)){stop("Data must consist of counts. You might try the round function.")}
+  if(!identical(round(X),as.data.frame(apply(X,2,as.numeric)))){
+    warning("Some of the values of TP,FN,FP or TN do have non zero decimal places. Did you forget to round?")}
   if(nrow(X) < nrowwarn){warning("There are very few primary studies!")}
   return(invisible(NULL))
 }
