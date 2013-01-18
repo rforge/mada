@@ -19,6 +19,12 @@ export("fpr")
 export("spec")
 export("forest")
 export("talpha")
+export("SummaryPts")
+
+S3method(print, SummaryPts)
+S3method(summary, SummaryPts)
+S3method(SummaryPts, default)
+S3method(SummaryPts, reitsma)
 
 S3method(print, reitsma)
 S3method(AUC, reitsma)

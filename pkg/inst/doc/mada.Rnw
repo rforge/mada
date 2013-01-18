@@ -66,19 +66,47 @@
 %% \Submitdate{2012-06-04}
 %% \Acceptdate{2012-06-04}
 
+                                                                     
+                                                                     
+                                                                     
+                                             
+% JSS 1060 Doebler, Holling 
+% 
+% Meta-Analysis of Diagnostic Accuracy with mada
+% 
+% For further instruction on JSS style requirements please see the JSS style
+% manual(in particular section 2.1 Style Checklist) at 
+% http://www.jstatsoft.org/downloads/JSSstyle.zip
+% 
+% Please see FAQ at: http://www.jstatsoft.org/style
+% And for further references please see RECENT JSS papers for detailed
+% documentation and examples. 
+% 
+% o Please make sure that all code/figures/tables/text are within the
+% margins of the manuscript
+% 
+% Please make sure that: 
+% 
+% Code:
+% Please make sure that all files needed to replicate the code/any examples within the manuscript are included in a standalone replication script.
+
+
 
 \begin{document}
 \SweaveOpts{concordance=TRUE}
 
-\setkeys{Gin}{width=0.6\textwidth}
 
+
+<<echo=FALSE>>=
+options(prompt = "R> ", continue = "+  ", width = 70, useFancyQuotes = FALSE)
+@
 
 \maketitle
 
 \section{Introduction}
 While substantial work has been conducted on methods for diagnostic meta-analysis, it has not become a routine procedure yet. One of the reasons for this is certainly the complexity of bivariate approaches, but another reason is that standard software packages for meta-analysis, for example \pkg{Comprehensive Meta-Analysis} and \pkg{RevMan} \citep{cma,revman}, do not include software to fit models appropriate for diagnostic meta-analysis. For the recommended \citep{leeflang2008systematic} bivariate approach of \citet{rutter2001hierarchical} meta-analysts can use Bayesian approaches (for example in \proglang{WinBUGS} \citep{lunn2000winbugs} or \proglang{OpenBUGS} \citep{lunn2009bugs}), the stata module \pkg{metandi} \citep{harbord2010metandi}, or the \proglang{SAS} macro \pkg{METADAS} \citep{takwoingi2008metadas}. So currently available software is either relatively complex (\proglang{WinBUGS}/\proglang{OpenBUGS}) or proprietary (\proglang{stata}, \proglang{SAS}).
 
-The open source \proglang{R}-package \pkg{mada} provides some established and some current approaches to diagnostic meta-analysis, as well as functions to produce descriptive statistics and graphics. It is hopefully complete enough to be the only tool needed for a diagnostic meta-analysis. \pkg{mada} has been developed with an \proglang{R} user in mind that has used standard model fitting functions before, and a lot of the output of \pkg{mada} will look familiar to such a user. While this paper cannot provide an introduction to\proglang{R}, it is hopefully detailed enough to provide a novice \proglang{R} user with enough hints to perform diagnostic meta-analysis along the lines of it. Free introductions to \proglang{R} are for example available on the homepage of the \href{http://www.r-project.org/}{\proglang{R} project}. We assume that the reader is familiar with central concepts of meta-analysis, like fixed and random effects models \citep[for example][]{borenstein2009introductionto} and ideas behind diagnostic accuracy meta-analysis and (S)ROC curves \citep[starting points could be][]{sutton2000methods,walter2002properties,jones2005summary,leeflang2008systematic}.
+The open source package \pkg{mada} written in \proglang{R} \citep{Rmanual} provides some established and some current approaches to diagnostic meta-analysis, as well as functions to produce descriptive statistics and graphics. It is hopefully complete enough to be the only tool needed for a diagnostic meta-analysis. \pkg{mada} has been developed with an \proglang{R} user in mind that has used standard model fitting functions before, and a lot of the output of \pkg{mada} will look familiar to such a user. While this paper cannot provide an introduction to \proglang{R}, it is hopefully detailed enough to provide a novice \proglang{R} user with enough hints to perform diagnostic meta-analysis along the lines of it. Free introductions to \proglang{R} are for example available on the homepage of the \href{http://www.r-project.org/}{\proglang{R} project}. We assume that the reader is familiar with central concepts of meta-analysis, like fixed and random effects models \citep[for example][]{borenstein2009introductionto} and ideas behind diagnostic accuracy meta-analysis and (S)ROC curves \citep[starting points could be][]{sutton2000methods,walter2002properties,jones2005summary,leeflang2008systematic}.
 
 \section{Obtaining the package}
 Once \proglang{R} is installed and an internet connection is available, the package can be installed from CRAN on most systems by typing
@@ -87,13 +115,13 @@ install.packages("mada")
 @
 Development of \pkg{mada} is hosted at \texttt{http://r-forge.r-project.org/projects/mada/}; the most current version is available there\footnote{For example by typing \texttt{install.packages("mada", repos="http://R-Forge.R-project.org")} at an \proglang{R} prompt.}, while only stable versions are available from CRAN. The package can then be loaded:
 <<>>=
-library(mada)
+library("mada")
 @
 
 \section{Entering data}
 Primary diagnostic studies observe the result of a \emph{gold standard} procedure which defines the presence or absence of a \emph{condition}, and the result of a  \emph{diagnostic test} (typically some kind of low cost procedure, or at least one that is less invasive than the gold standard). Data from such a primary study could be reported in a $2\times2$ table, see Table~\ref{2times2}.
 
-\begin{table}[h]\caption{Data from the $i$th study in a $2\times2$ table}\label{2times2}
+\begin{table}[h]\caption{Data from the $i$th study in a $2\times2$ table.}\label{2times2}
 \begin{center}
 \begin{tabular}[tbp]{lcc}\hline
   		&with condition &without condition \\
@@ -139,13 +167,13 @@ AuditC6
 @
 Note that many central functions in \pkg{mada} also accept four vectors of frequencies (TP, FN, FP, TN) as input. Nevertheless, it is convenient to store not only the observed frequencies, but also the study names in the same data frame. The following command shows how to do this for our shortened example:
 <<>>=
-AuditC6$names <- c("Study 1","Study 2","Study 4",
-                   "Study 4","Study 5","Study 6")
+AuditC6$names <- c("Study 1", "Study 2", "Study 4",
+                   "Study 4", "Study 5", "Study 6")
 @
 The full data set with 14 studies is part of \pkg{mada}; 
 let's load the data set and have a look at the last six studies:
 <<>>=
-data(AuditC)
+data("AuditC")
 tail(AuditC)
 @
 In the following we will use the \code{AuditC} data set as a running example.
@@ -241,21 +269,21 @@ dev.off()
 \begin{figure}
 \begin{center}
 \includegraphics{pairedforest}
-\caption{Paired forest plot for AUDIT-C data}\label{forestplots}
+\caption{Paired forest plot for AUDIT-C data.}\label{forestplots}
 \end{center}
 \end{figure}
 
-\setkeys{Gin}{width=0.6\textwidth}
+
 
 
 Apart from these univariate graphics \pkg{mada} provides a variety of plots to study the data on ROC space. Note that for exploratory purposes it is often useful to employ color and other features of\proglang{R}'s plotting system. Two high level plots are provided by \pkg{mada}: \code{crosshair} to produce crosshair plots \citep{phillips2010cross}, and \code{ROCellipse}. The following is an example of a call of \code{crosshair} that produces (arbitrarily) colored crosshairs and makes the crosshairs wider with increased sample size; also only a portion of ROC space is plotted.
 <<>>=
-## calculate weights:
 rs <- rowSums(AuditC)
-rs <- 4 * rs/max(rs)
-crosshair(AuditC, xlim = c(0,0.6), ylim = c(0.4,1), col = 1:14, lwd = rs)
+weights <- 4 * rs / max(rs)
+crosshair(AuditC, xlim = c(0,0.6), ylim = c(0.4,1), 
+          col = 1:14, lwd = weights)
 @
-Figure~\ref{diagplots} displays this plot and the next descriptive plot.
+Figure~\ref{diagplots} displays this plot and the next descriptive plot:
 \code{ROCellipse} plots confidence regions which describe the uncertainty of the pair of sensitivity and false positive rate. These regions are ellipses on logit ROC space, and by back-transforming them to regular ROC space the (sometimes oddly shaped) regions are produced. By default this function will also plot the point estimates. The following example is a bit contrived, but showcases the flexibility of \code{ROCellipse}: here the plotting of the point estimates is suppressed manipulating the \code{pch} argument, but then points are added in the next step.
 <<>>=
 ROCellipse(AuditC, pch = "")
@@ -267,7 +295,7 @@ pdf(file = "diagplots.pdf", width = 12, height = 6)
 par(omi = c(0,0,0,0), mai = c(0.9,0.9,0.3,0.3))
 plot.new()
 par(fig = c(0, 0.5, 0, 1), pty = "s", new = TRUE)
-crosshair(AuditC, xlim = c(0,0.6), ylim = c(0.4,1), col = 1:14, lwd = rs)
+crosshair(AuditC, xlim = c(0,0.6), ylim = c(0.4,1), col = 1:14, lwd = weights)
 par(fig = c(0.5, 1, 0, 1), pty = "s", new = TRUE)
 ROCellipse(AuditC, pch = "")
 points(fpr(AuditC), sens(AuditC))
@@ -279,14 +307,13 @@ dev.off()
 \begin{figure}
 \begin{center}
 \includegraphics{diagplots}
-\caption{A ``weighted'' crosshair plot with (arbitrary) coloring and a plot with confidence regions for primary study estimates}\label{diagplots}
+\caption{A ``weighted'' crosshair plot with (arbitrary) coloring and a plot with confidence regions for primary study estimates.}\label{diagplots}
 \end{center}
 \end{figure}
 
-\setkeys{Gin}{width=0.6\textwidth}
 
 
-\section{Univariate Approaches}
+\section{Univariate approaches}
 Before the advent of the bivariate approaches by \citet{rutter2001hierarchical} and \citet{reitsma2005bivariate}, some univariate approaches to the meta-analysis of diagnostic accuracy were more popular.  Bivariate approaches cannot be recommended if the sample size is too small. The bivariate model of \citet{reitsma2005bivariate} for example has 5 parameters, which would clearly be too much for a handful of studies. Hence \pkg{mada} provides some univariate methods. Since pooling sensitivities or specificities can be misleading \citep{gatsonis2006meta}, options for the univariate meta-analysis of these are not provided. \pkg{mada} does provide approaches for the DOR \citep{glas2003diagnostic}, the positive and negative likelihood ratios, and $\theta$, the accuracy parameter of the proportional hazards model for diagnostic meta-analysis \citep{boehningphm}. In this vignette we explain the details on the DOR methodology and the methods for $\theta$.
 
 \subsection{Diagnostic odds ratio}
@@ -328,18 +355,31 @@ Note that the brackets around \code{fit.DOR.DSL <- madauni(AuditC)} are a compac
 summary(fit.DOR.DSL)
 @
 In addition to the confidence intervals, Cochran's $Q$ statistic \citep{cochran1954combination} can be seen and Higgins $I^2$ \citep{higgins2003measuring}. Producing a forest plot of the (log-)DOR values together with the summary estimate is straightforward using the  \code{forest} method for the  \code{madauni} class:
-\begin{center}
-<<fig=TRUE>>=
+<<>>=
 forest(fit.DOR.DSL)
 @
+The resulting plot is shown in Figure~\ref{DORforest}.
+<<echo=FALSE, results=hide>>=
+pdf(file = "DORforest.pdf", width = 6, height = 6)
+par(omi = c(0,0,0,0), mai = c(0.9,0.9,0.3,0.3))
+forest(fit.DOR.DSL)
+dev.off()
+@
+\setkeys{Gin}{width=0.5\textwidth}
+\begin{figure}
+\begin{center}
+\includegraphics{DORforest}
+\caption{Forest plot for a univariate random effects meta-analysis of the AUDIT-C data using the diagnostic odds ratio.}\label{DORforest}
 \end{center}
+\end{figure}
+
 
 \subsection{Proportional hazards model approach}
 The proportional hazards model approach \citep[PHM; see][]{boehningphm} builds on the assumption of a simple form of the ROC curves. The so called \emph{Lehmann model} \citep{le2006solution} is assumed. Let $p_i$ and $u_i$ denote the $i$th study's sensitivity and false positive rate  respectively. The relationship of $p_i$ and $u_i$ is then assumed to be
 \[
 p_i = u_i^{\theta_i}, 
 \]
-where $\theta_i > 0$ is a diagnostic accuracy parameter. The smaller $\theta$, the larger the area under the ROC curve and thus the more accurate the diagnostic test. For the meta-analysis of $\theta$ the APMLE estimator is implemented in \pkg{mada} for the case of homogeneity (i.e. fixed effects) and heterogeneity (i.e. random effects). Again the standard output of the \code{phm} function is rather sparse:
+where $\theta_i > 0$ is a diagnostic accuracy parameter. The smaller $\theta$, the larger the area under the ROC curve and thus the more accurate the diagnostic test. For the meta-analysis of $\theta$ the APMLE estimator is implemented in \pkg{mada} for the case of homogeneity (i.e., fixed effects) and heterogeneity (i.e., random effects). Again the standard output of the \code{phm} function is rather sparse:
 <<>>=
 (fit.phm.homo <- phm(AuditC, hetero = FALSE))
 (fit.phm.het <- phm(AuditC))
@@ -352,16 +392,27 @@ The $\chi^2$ test goodness of fit test rejects the assumption of homogeneity, bu
 <<>>=
 summary(fit.phm.het)
 @
-The estimation of $\theta$ results in an SROC curve; plotting this curve together with confidence bands obtained from the confidence interval of $\theta$ in the summary is simple (we also add the original data on ROC space with confidence regions and only plot a portion of ROC space):
-
-\setkeys{Gin}{width=.8\textwidth}
-
-\begin{center}
-<<fig = TRUE>>=
+The estimation of $\theta$ results in an SROC curve; plotting this curve together with confidence bands obtained from the confidence interval of $\theta$ in the summary is done with the \code{plot} method. We also add the original data on ROC space with confidence regions and only plot a portion of ROC space.
+<<>>=
 plot(fit.phm.het, xlim = c(0,0.6), ylim = c(0.4,1))
 ROCellipse(AuditC, add = TRUE)
 @
+The resulting plot is shown in Figure~\ref{phmplot}.
+<<echo=FALSE, results=hide>>=
+pdf(file = "phmplot.pdf", width = 6, height = 6)
+par(omi = c(0,0,0,0), mai = c(0.9,0.9,0.3,0.3))
+plot(fit.phm.het, xlim = c(0,0.6), ylim = c(0.4,1))
+ROCellipse(AuditC, add = TRUE)
+dev.off()
+@
+\setkeys{Gin}{width=0.5\textwidth}
+\begin{figure}
+\begin{center}
+\includegraphics{phmplot}
+\caption{Summary plot for the analysis of the AUDIT-C data with the PHM model.}\label{phmplot}
 \end{center}
+\end{figure}
+
 Note that the SROC curve is not extrapolated beyond the range of the original data. The area under the SROC curve, the AUC, is also part of the summary above. For the PHM it is calculated by
 \[
 \mathrm{AUC} = \frac{1}{\theta + 1},
@@ -405,44 +456,78 @@ The \code{print} method for \code{reitsma} objects has a scarce output. More inf
 <<>>=
 summary(fit.reitsma)
 @
-Note the sensitivity and false positive rate returned in this summary are just the back-transformed $\mu_1$ and $\mu_2$. One can then proceed to plot the SROC curve of this model. By default the point estimate of the pair of sensitivity and false positive rate is also plotted together with a confidence region. In the following example the SROC curve is plotted a bit thicker using the \texttt{sroclwd} argument, a caption is added to the plot and also the data and a legend. By default the SROC curve is not extrapolated beyond the range of the original data.
-\begin{center}
-<<fig=TRUE>>=
+Note the sensitivity and false positive rate returned in this summary are just the back-transformed $\mu_1$ and $\mu_2$. One can then proceed to plot the SROC curve of this model. By default the point estimate of the pair of sensitivity and false positive rate is also plotted together with a confidence region. In the following example the SROC curve is plotted a bit thicker using the \texttt{sroclwd} argument, a caption is added to the plot and also the data and a legend. By default the SROC curve is not extrapolated beyond the range of the original data: 
+<<>>=
 plot(fit.reitsma, sroclwd = 2,
      main = "SROC curve (bivariate model) for AUDIT-C data")
 points(fpr(AuditC), sens(AuditC), pch = 2)
 legend("bottomright", c("data", "summary estimate"), pch = c(2,1))
 legend("bottomleft", c("SROC", "conf. region"), lwd = c(2,1))
 @
+The output is shown in Figure~\ref{SROCAuditC}.
+<<echo=FALSE, results=hide>>=
+pdf(file = "SROCAuditC.pdf", width = 6, height = 6)
+par(omi = c(0,0,0,0), mai = c(0.9,0.9,0.3,0.3))
+plot(fit.reitsma, sroclwd = 2,
+     main = "SROC curve (bivariate model) for AUDIT-C data")
+points(fpr(AuditC), sens(AuditC), pch = 2)
+legend("bottomright", c("data", "summary estimate"), pch = c(2,1))
+legend("bottomleft", c("SROC", "conf. region"), lwd = c(2,1))
+dev.off()
+@
+\setkeys{Gin}{width=0.5\textwidth}
+\begin{figure}
+\begin{center}
+\includegraphics{SROCAuditC}
+\caption{SROC curve for the \citet{reitsma2005bivariate} model.}\label{SROCAuditC}
 \end{center}
+\end{figure}
+
+
 
 \subsection{Comparing SROC curves}
 We show how to compare SROC curves. \citet{patrick1994validity} conducted a meta-analysis to (among other things) investigate the efficacy of self administered and interviewer administered questionnaires to detect nicotine use. The data sets \texttt{SAQ} and \texttt{IAQ} are the respective subsets of this data. First one fits bivariate models to the data sets:
 <<>>=
-data(IAQ)
-data(SAQ)
+data("IAQ")
+data("SAQ")
 fit.IAQ <- reitsma(IAQ)
 fit.SAQ <- reitsma(SAQ)
 @
 Then one plots the SROC curves of these fits, beginning with the fit of the IAQ and adding the SAQ curve. Note that the \texttt{lty} arguments is used so that the curves can be distinguished.
-\begin{center}
-<<fig=TRUE>>=
+<<>>=
 plot(fit.IAQ, xlim = c(0,.5), ylim = c(.5,1),
      main = "Comparison of IAQ and SAQ")
 lines(sroc(fit.SAQ), lty = 2)
 ROCellipse(fit.SAQ, lty = 2, pch = 2, add = TRUE)
-## add orginal data
 points(fpr(IAQ), sens(IAQ), cex = .5)
 points(fpr(SAQ), sens(SAQ), pch = 2, cex = 0.5)
 legend("bottomright", c("IAQ", "SAQ"), pch = 1:2, lty = 1:2)
 @
+<<echo=FALSE, results=hide>>=
+pdf(file = "SAQIAQ.pdf", width = 6, height = 6)
+par(omi = c(0,0,0,0), mai = c(0.9,0.9,0.3,0.3))
+plot(fit.IAQ, xlim = c(0,.5), ylim = c(.5,1),
+     main = "Comparison of IAQ and SAQ")
+lines(sroc(fit.SAQ), lty = 2)
+ROCellipse(fit.SAQ, lty = 2, pch = 2, add = TRUE)
+points(fpr(IAQ), sens(IAQ), cex = .5)
+points(fpr(SAQ), sens(SAQ), pch = 2, cex = 0.5)
+legend("bottomright", c("IAQ", "SAQ"), pch = 1:2, lty = 1:2)
+dev.off()
+@
+\setkeys{Gin}{width=0.5\textwidth}
+\begin{figure}
+\begin{center}
+\includegraphics{SAQIAQ}
+\caption{Comparison of interviewer and self-adminstered smoking questionaires with SROC curves.}\label{SAQIAQ}
 \end{center}
-The summary estimates are well separated, though the confidence regions slightly overlap. It would nevertheless be safe to conclude that IAQ is a more reliable way to measure smoking than SAQ.
+\end{figure}
+Figure~\ref{SAQIAQ} contains the resulting plot. The summary estimates are well separated, though the confidence regions slightly overlap. It would nevertheless be safe to conclude that IAQ is a more reliable way to measure smoking than SAQ.
 
 \subsection{Bivariate meta-regression}
 We demonstrate diagnostic meta-regression also using the data of \citet{patrick1994validity}. We use the complete data set, which is loaded by
 <<>>=
-data(smoking)
+data("smoking")
 @
 The \texttt{data.frame} contains the same variables as the \texttt{SAQ} and \texttt{IAQ} subsets, but the type is coded by the fifth variable \texttt{type}:
 <<>>=
@@ -457,7 +542,7 @@ We generate detailed output by:
 <<>>=
 summary(fit.smoking)
 @
-This output can be interpreted as follows: The $z$-value for the regression coefficient for the sensitivities is significant, indicating that the interviewer administered questionnaires offer a better sensitivity. Interestingly the point estimate for the  false-positive rates does not indicate any effect.
+This output can be interpreted as follows: The $z$~value for the regression coefficient for the sensitivities is significant, indicating that the interviewer administered questionnaires offer a better sensitivity. Interestingly the point estimate for the  false-positive rates does not indicate any effect.
 
 Note that once meta-regression is used, one cannot reasonably plot SROC curves, since fixed values for the covariates would have to be supplied to do so. Also (global) AUC values do not make sense.
 
@@ -471,8 +556,9 @@ For $\alpha = 1$, the logit is obtained. In many cases the fit of a bivariate me
 fit.smoking1 <- reitsma(smoking)
 fit.smoking2 <- reitsma(smoking, alphasens = 0, alphafpr = 2)
 AIC(fit.smoking1)
-AIC(fit.smoking2) # fit improved
+AIC(fit.smoking2)
 @
+The lower AIC value indicates, that the fit of the second model is better.
 
 \section{Further development}
 In the future \pkg{mada} will support the mixture approach of \citet{holling2011likelihood}.

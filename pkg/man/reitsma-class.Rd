@@ -59,6 +59,8 @@ Objects of the class \code{\link{reitsma}} are output by the function with the s
 }
 \details{
 The confidence regions of \code{ROCellipse} are first calculated as ellipses on logit-ROC space, so the back-transformed regions that are output are not necessarily ellipses. The Monte-Carlo SROC curves are generated from random samples from the fitted model and a \code{\link{lowess}} smooth through them is output. Many computational details are to be found in Doebler et al. (2012).
+
+If you require positive or negative likelihood ratios, you should use \code{\link{SummaryPts}}.
 }
 \value{
 \code{sroc} returns a  matrix ready for plotting. Each row corresponds to one point in ROC space. \code{mcsroc} returns a \code{\link{lowess}} smooth. \code{ROCellipse} returns a list, the first element being a matrix of points in ROC space that delimit the confidence region and the second is the point estimate of the pair of sensitivity and false positive rate in ROC space.
@@ -71,7 +73,7 @@ Philipp Doebler <philipp.doebler@googlemail.com>
 }
 
 \seealso{
-\code{\link{reitsma}}
+\code{\link{reitsma}}, \code{\link{SummaryPts}}
 }
 \examples{
 # load data
