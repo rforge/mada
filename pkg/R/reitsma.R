@@ -19,7 +19,10 @@ stopifnot(is.numeric(correction), 0 <= correction,
           is.numeric(FP) | (is.character(FP) & length(FP) == 1),
           is.numeric(TN) | (is.character(TN) & length(TN) == 1),
           is.numeric(FN) | (is.character(FN) & length(FN) == 1))
-
+if(!is.null(subset)){stopifnot(length(subset)>0, 
+                               min(subset)>0, 
+                               max(subset) < nrow(data)+1)}
+if(is.null(subset)){subset <- 1:nrow(data)}
 if(is.null(formula)){formula <- cbind(tsens,tfpr)~1}
 if(!class(formula) == "formula"){stop("formula must be of class formula")}
 if(!formula[2] == (cbind(tsens,tfpr)~1)[2]){stop("The left hand side of formula must be cbind(tsens, tfpr)")}
@@ -37,7 +40,7 @@ if(is.null(data) & !is.character(c(TP,FP,TN,FN))){
   origdata <- data.frame(TP = TP, FN = FN, FP = FP, TN = TN)
 }
 
-freqdata <- cbind(TP,FN,FP,TN)
+freqdata <- cbind(TP,FN,FP,TN)[subset, ]
 checkdata(freqdata)
 
 N <- length(TP)	
@@ -93,6 +96,7 @@ fit$alphasens <- alphasens
 fit$alphafpr <- alphafpr
 fit$data <- origdata
 fit$freqdata <- as.data.frame(freqdata)
+fit$subset <- subset
   
 class(fit) <- "reitsma"
 
@@ -170,7 +174,23 @@ function (object, level = 0.95, ...)
   corRandom <- Psi/outer(ran.sd, ran.sd)
 #  qstat <- unclass(qtest(object))  
   if(attr(object$logLik,"df")== 5){AUC <- AUC(object)}else{AUC <- NULL}
-   
+  
+  if(attr(object$logLik,"df")== 5){
+  ## HSROC parameters (formulae from Harbord et al)
+  Theta <- 0.5*(sqrt(ran.sd[2]/ran.sd[1])*coef[1] + sqrt(ran.sd[1]/ran.sd[2])*coef[2]) ##coef[2] is the fpr, so need to change sign!
+  Lambda <- sqrt(ran.sd[2]/ran.sd[1])*coef[1] - sqrt(ran.sd[1]/ran.sd[2])*coef[2] ##coef[2] is the fpr, so need to change sign!
+  sigma2theta <- 0.5*(ran.sd[1]*ran.sd[2] + Psi[1,2]) ##coef[2] is the fpr, so need to change sign of Psi[1,2] as well!
+  sigma2alpha <- 2*(ran.sd[1]*ran.sd[2] - Psi[1,2])  ##coef[2] is the fpr, so need to change sign of Psi[1,2] as well!
+  beta <- log(ran.sd[2]/ran.sd[1])             
+    coef_hsroc <- list(Theta = Theta,
+                       Lambda = Lambda,
+                       beta = beta,
+                       sigma2theta = sigma2theta,
+                       sigma2alpha = sigma2alpha)
+  coef_hsroc <- lapply(coef_hsroc, function(x){attr(x, "names") <- NULL; x})
+  }else{
+    coef_hsroc = NULL
+  }
   keep <- match(c("vcov", "Psi", "df.res", "rank", "logLik", 
                   "converged", "dim", "df", "lab", "na.action", "call", 
                   "terms", "method", "alphasens", "alphafpr"), names(object), 0L)
@@ -180,7 +200,8 @@ function (object, level = 0.95, ...)
                                                              corRandom = corRandom, 
 #                                                             qstat = qstat, 
                                                              ci.level = ci.level,
-                                                             AUC = AUC))
+                                                             AUC = AUC,
+                                                             coef_hsroc = coef_hsroc))
   class(out) <- "summary.reitsma"
   return(out)
 }
@@ -238,7 +259,12 @@ print.summary.reitsma <- function (x, digits = 4, ...){
     cat(c("Partial AUC (restricted to observed FPRs and normalized): ",as.character(round(x$AUC$pAUC,3))))
     cat("\n")  
   }
-    
+  
+  if(!is.null(x$coef_hsroc)){
+    cat("\n")
+    cat("HSROC parameters \n")
+    print(sapply(x$coef_hsroc,function(x){x}))
+  }
   
 }
   
@@ -303,7 +329,7 @@ plot.reitsma <- function(x, extrapolate = FALSE, plotsumm = TRUE, level = 0.95,
     alpha.sens <- x$alphasens
     alpha.fpr <- x$alphafpr
     mu <- x$coefficients["(Intercept)",]
-    Sigma <- x$Psi
+    Sigma <- x$Psi + vcov(x)
     talphaellipse <- ellipse(Sigma, centre = mu, level = level)
     predellipse <- matrix(0, ncol = 2, nrow = nrow(talphaellipse))
     predellipse[,1] <- mada:::inv.trafo(alpha.fpr, talphaellipse[,2])

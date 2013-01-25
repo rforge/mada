@@ -60,6 +60,8 @@ Objects of the class \code{\link{reitsma}} are output by the function with the s
 \details{
 The confidence regions of \code{ROCellipse} are first calculated as ellipses on logit-ROC space, so the back-transformed regions that are output are not necessarily ellipses. The Monte-Carlo SROC curves are generated from random samples from the fitted model and a \code{\link{lowess}} smooth through them is output. Many computational details are to be found in Doebler et al. (2012).
 
+The \code{summary} function for \code{reitsma} objects also contains the five parameters of the HSROC model by Rutter & Gatsonis (2001) if no regression is performed. These values are calculated by using the formulae from Harbord et al. (2007).
+
 If you require positive or negative likelihood ratios, you should use \code{\link{SummaryPts}}.
 }
 \value{
