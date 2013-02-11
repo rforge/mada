@@ -7,11 +7,11 @@
 ## philipp.doebler@googlemail.com              ##
 #################################################
 
-library(boot)
-library(glmx)
-library(mvtnorm)
-library(MCMCpack)
-#library(RcppGSL)
+# library(boot)
+# library(glmx)
+# library(mvtnorm)
+# library(MCMCpack)
+# #library(RcppGSL)
 
 ### Notation from Psychological Methods paper
 
@@ -39,7 +39,7 @@ library(MCMCpack)
 
 reitsmamcmc <- function(data, covariates = NULL, cc = 0.5, 
                         b= 250, R = 250, thin = 1,
-                        alphap = 1, alphaq = 1, nu_wish = 3, V_wish = diag(2),
+                        alphasens = 1, alphafpr = 1, nu_wish = 3, V_wish = diag(2),
                         update_alpha = FALSE, tune = 0.05){
 
 data <- data + cc
@@ -54,8 +54,8 @@ N <- length(y)
 p <- y/m
 q <- z/n
 
-ap <- alphap ## initial values
-aq <- alphaq
+ap <- alphasens ## initial values
+aq <- alphafpr
 
 thetap <- talpha(ap)$linkfun(p)
 thetaq <- talpha(aq)$linkfun(q)
@@ -84,9 +84,14 @@ X[,2,2*(1:K)] <- X.lm
 
 ## setup arrays for storing
 betaA <- array(NA, dim = c(R,2*K))
+colnames(betaA) <- c("tsens", "tfpr", colnames(covariates))
 SigmaA <- array(NA, dim = c(R,2,2))
+dimnames(SigmaA) <- list(NULL, c("tsens", "tfpr"), c("tsens", "tfpr")) 
 alphaA <- array(NA, dim = c(R,2))
+colnames(alphaA) <- c("alphasens", "alphafpr")
 accept <- 0
+deviance <- array(NA, dim = c(R,1))
+colnames(deviance) <- "deviance"
 
 ## prepare likelihood quotient for alpha updates
 ## for this note that the likelihood only depends on
@@ -167,5 +172,12 @@ if(j %% 100 == 0){cat("current iteration: ", j, "\n")
   }
 }# end of loop over 1:R+b
 
-return(list(betaA = betaA, SigmaA = SigmaA, alphaA = alphaA, accept = accept))
+SigmaA <- matrix(SigmaA,ncol =4)
+colnames(SigmaA) <- c("VARtsens","COVtsenstfpr", "COVtsenstfpr", "VARtfpr")
+
+return(list(betaA = mcmc(betaA, start = b+1, end = R+b, thin = thin),
+            SigmaA = mcmc(SigmaA, 
+                          start = b+1, end = R+b, thin = thin),
+            alphaA = mcmc(alphaA, start = b+1, end = R+b, thin = thin),
+            accept = accept))
 }# end of function

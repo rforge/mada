@@ -1,6 +1,6 @@
 SummaryPts <-function(object, ...) UseMethod("SummaryPts")
 
-SummaryPts.default <- function(mu,Sigma,alphasens = 1, alphafpr = 1,
+SummaryPts.default <- function(object, mu,Sigma,alphasens = 1, alphafpr = 1,
                            n.iter = 10^6, FUN, ...){
   samples <- rmvnorm(n.iter, mu, Sigma)
   sens <- mada:::inv.trafo(alphasens,samples[,1])
@@ -10,7 +10,8 @@ SummaryPts.default <- function(mu,Sigma,alphasens = 1, alphafpr = 1,
   out
 }
 
-SummaryPts.reitsma <- function(fit, n.iter = 10^6, FUN = NULL){
+SummaryPts.reitsma <- function(object, n.iter = 10^6, FUN = NULL){
+  fit <- object
   if(length(coef(fit)) > 2){
     stop("SummaryPts is not be used for meta-regression!")}
   if(is.null(FUN)){FUN <- list(posLR = function(sens,fpr){sens/fpr},
@@ -27,7 +28,8 @@ print.SummaryPts <- function(x, ...){
 print(lapply(x, mean))
 }
 
-summary.SummaryPts <- function(x, level = 0.95, digits = 3, ...){
+summary.SummaryPts <- function(object, level = 0.95, digits = 3, ...){
+  x <- object
   quantiles <- c((1-level)/2, 1-(1-level)/2) 
   qq <- t(sapply(x, function(x){stats::quantile(x, probs = quantiles)}))
   qq <- signif(cbind(sapply(x,mean), sapply(x,median), qq), digits)
