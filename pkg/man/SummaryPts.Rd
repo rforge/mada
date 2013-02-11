@@ -16,17 +16,17 @@ Zwindermann & Bossuyt (2008) argue that likelihood ratios should not be pooled b
 }
 \usage{
 SummaryPts(object, ...)
-\method{SummaryPts}{default}(mu,Sigma,alphasens = 1, alphafpr = 1,
+\method{SummaryPts}{default}(object, mu,Sigma,alphasens = 1, alphafpr = 1,
                            n.iter = 10^6, FUN, ...)
-\method{SummaryPts}{reitsma}(fit, n.iter = 10^6, FUN = NULL)
+\method{SummaryPts}{reitsma}(object, n.iter = 10^6, FUN = NULL, ...)
 \method{print}{SummaryPts}(x, ...)
-\method{summary}{SummaryPts}(x, level = 0.95, digits = 3, ...)
+\method{summary}{SummaryPts}(object, level = 0.95, digits = 3, ...)
 }
 
 \arguments{
 \item{object}{an object for which a method exists}
-\item{fit}{A \code{\link{reitsma}} object}
-\item{x}{An object of class \code{SummaryPts}}  \item{mu}{numeric of length 2, expected to be the mean parameter of a bivariate model}
+\item{x}{An object of class \code{SummaryPts}}  
+\item{mu}{numeric of length 2, expected to be the mean parameter of a bivariate model}
     \item{Sigma}{2x2 variance covariance matrix, expected to be the matrix representing the standard error of \code{mu}  and the covariance of these two estimates}
   \item{alphasens}{numeric, alpha parameter for the sensitivities. Amounts to logit transformation if set to 1 (the default). See \code{\link{reitsma}}.}
     \item{alphafpr}{numeric, alpha parameter for the false positive rates. Amounts to logit transformation if set to 1 (the default). See \code{\link{reitsma}}.}

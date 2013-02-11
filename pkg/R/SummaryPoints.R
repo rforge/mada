@@ -10,7 +10,7 @@ SummaryPts.default <- function(object, mu,Sigma,alphasens = 1, alphafpr = 1,
   out
 }
 
-SummaryPts.reitsma <- function(object, n.iter = 10^6, FUN = NULL){
+SummaryPts.reitsma <- function(object, n.iter = 10^6, FUN = NULL, ...){
   fit <- object
   if(length(coef(fit)) > 2){
     stop("SummaryPts is not be used for meta-regression!")}
@@ -18,7 +18,7 @@ SummaryPts.reitsma <- function(object, n.iter = 10^6, FUN = NULL){
                                negLR = function(sens,fpr){(1-sens)/(1-fpr)},
                                invnegLR = function(sens, fpr){(1-fpr)/(1-sens)},
                                DOR = function(sens, fpr){sens*(1-fpr)/((1-sens)*fpr)})}
-  SummaryPts.default(coef(fit)[1:2],vcov(fit), 
+  SummaryPts.default(mu = coef(fit)[1:2], Sigma = vcov(fit), 
                          alphasens = fit$alphasens, 
                          alphafpr = fit$alphafpr,
                          n.iter = n.iter, FUN = FUN)

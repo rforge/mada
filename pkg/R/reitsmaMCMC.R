@@ -1,4 +1,5 @@
 reitsmaMCMC <- function(data, ...) UseMethod("reitsmaMCMC")
+
 reitsmaMCMC.default <-
   function(data = NULL, subset=NULL, formula = NULL,
            TP="TP", FN="FN", FP="FP", TN="TN", 
