@@ -19,10 +19,7 @@ stopifnot(is.numeric(correction), 0 <= correction,
           is.numeric(FP) | (is.character(FP) & length(FP) == 1),
           is.numeric(TN) | (is.character(TN) & length(TN) == 1),
           is.numeric(FN) | (is.character(FN) & length(FN) == 1))
-if(!is.null(subset)){stopifnot(length(subset)>0, 
-                               min(subset)>0, 
-                               max(subset) < nrow(data)+1)}
-if(is.null(subset)){subset <- 1:nrow(data)}
+
 if(is.null(formula)){formula <- cbind(tsens,tfpr)~1}
 if(!class(formula) == "formula"){stop("formula must be of class formula")}
 if(!formula[2] == (cbind(tsens,tfpr)~1)[2]){stop("The left hand side of formula must be cbind(tsens, tfpr)")}
@@ -40,7 +37,7 @@ if(is.null(data) & !is.character(c(TP,FP,TN,FN))){
   origdata <- data.frame(TP = TP, FN = FN, FP = FP, TN = TN)
 }
 
-freqdata <- cbind(TP,FN,FP,TN)[subset, ]
+freqdata <- cbind(TP,FN,FP,TN)
 checkdata(freqdata)
 
 N <- length(TP)	
@@ -96,7 +93,6 @@ fit$alphasens <- alphasens
 fit$alphafpr <- alphafpr
 fit$data <- origdata
 fit$freqdata <- as.data.frame(freqdata)
-fit$subset <- subset
   
 class(fit) <- "reitsma"
 
@@ -261,9 +257,8 @@ print.summary.reitsma <- function (x, digits = 4, ...){
   }
   
   if(!is.null(x$coef_hsroc)){
-    cat("\n")
     cat("HSROC parameters \n")
-    print(sapply(x$coef_hsroc,function(x){x}))
+    print(x$coef_hsroc)
   }
   
 }
@@ -273,8 +268,18 @@ vcov.reitsma <- function(object, ...){object$vcov}
 
 logLik.reitsma <- function(object, ...){object$logLik}
 
-sroc.reitsma <- function(fit, fpr = 1:99/100, ...){
-  mada:::sroc2(fit, fpr=fpr, ...)
+sroc.reitsma <- function(fit, fpr = 1:99/100, type = "ruttergatsonis", ...){
+  stopifnot(type %in% c("ruttergatsonis", "naive"))
+  if(type == "naive"){return(mada:::sroc2(fit, fpr=fpr, ...))}
+  if(type == "ruttergatsonis"){
+    sum_fit <- summary(fit)
+    Lambda <- summary(fit)$coef_hsroc$Lambda    
+    Beta <- summary(fit)$coef_hsroc$beta    
+    return(cbind(fpr, 
+#      sens = (1+exp(-Lambda*exp(-0.5*Beta)-exp(-Beta)*log(fpr/(1-fpr))))^(-1)))                 
+      sens = mada:::inv.trafo(fit$alphasens, (Lambda*exp(-Beta/2) + 
+          exp(-Beta)*mada:::trafo(fit$alphafpr, fpr)))))
+  }
 }
 
 mcsroc.reitsma <- function(fit, fpr = 1:99/100, replications = 10000, lambda = 100, ...){
@@ -306,6 +311,7 @@ plot.reitsma <- function(x, extrapolate = FALSE, plotsumm = TRUE, level = 0.95,
                          ylim = c(0,1), xlim = c(0,1), pch = 1, 
                          sroclty = 1, sroclwd = 1, 
                          predict = FALSE, predlty = 3, predlwd = 1,
+                         type = "ruttergatsonis",
                          ...)
 {
   plot(c(2,2), ylim = ylim, xlim = xlim, 
@@ -317,7 +323,7 @@ plot.reitsma <- function(x, extrapolate = FALSE, plotsumm = TRUE, level = 0.95,
   
   if(extrapolate){bound = c(0,1)}
   if(!extrapolate){bound = c(min(FPR), max(FPR))}
-  srocmat <- sroc(x)
+  srocmat <- sroc(x, type = type)
   lines(srocmat[cut(srocmat[,1],bound, "withinbound") == "withinbound",], 
         lty = sroclty, lwd = sroclwd)
   }else{
