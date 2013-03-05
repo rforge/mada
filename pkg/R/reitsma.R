@@ -202,7 +202,7 @@ function (object, level = 0.95, ...)
   return(out)
 }
 
-print.summary.reitsma <- function (x, digits = 4, ...){
+print.summary.reitsma <- function (x, digits = 3, ...){
     
     methodname <- c("reml", "ml", "fixed")
     methodlabel <- c("REML", "ML", "Fixed")
@@ -227,7 +227,7 @@ print.summary.reitsma <- function (x, digits = 4, ...){
     tabletot <- gsub("NA"," -",tabletot)
     tabletot <- cbind(tabletot, signif)
     colnames(tabletot)[7] <- ""
-      print(tabletot, quote = FALSE, right = TRUE, print.gap = 2)
+      print(tabletot, quote = FALSE, right = TRUE, print.gap = 1)
     cat("---\nSignif. codes: ", attr(signif, "legend"), "\n\n")
     if (!x$method == "fixed") {
       cat("Variance components: between-studies Std. Dev and correlation matrix", 
@@ -240,13 +240,13 @@ print.summary.reitsma <- function (x, digits = 4, ...){
       table <- formatC(table, digits = digits, format = "f")
       table[grep("NA", table)] <- "."
       print(table, quote = FALSE, right = TRUE, na.print = "", 
-            print.gap = 2)
+            print.gap = 1)
       cat("\n")
     }
     table <- c(x$logLik, x$AIC, x$BIC)
     names(table) <- c("logLik", "AIC", "BIC")
     table <- formatC(table, digits = digits, format = "f")
-    print(table, quote = FALSE, right = TRUE, print.gap = 2)
+    print(table, quote = FALSE, right = TRUE, print.gap = 1)
     cat("\n")
 
   if(!is.null(x$AUC)){
@@ -257,8 +257,13 @@ print.summary.reitsma <- function (x, digits = 4, ...){
   }
   
   if(!is.null(x$coef_hsroc)){
+    cat("\n")
     cat("HSROC parameters \n")
-    print(x$coef_hsroc)
+    table <- as.numeric(x$coef_hsroc)
+    names(table) <- names(x$coef_hsroc)
+    table <- formatC(table, digits = digits, format = "f")
+    print(table, quote = FALSE, right = TRUE, print.gap = 1)
+    cat("\n")
   }
   
 }

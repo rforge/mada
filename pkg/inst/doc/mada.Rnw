@@ -225,7 +225,7 @@ Correlation of sensitivities and false positive rates:
    rho  2.5 % 97.5 % 
  0.677  0.228  0.888 
 \end{Soutput}
-For the AUDIT-C data, the underlying call to \code{prop.test} produces a warning which should not worry us here. The \code{madad} function has a range of options with respect to computational details; for example one can compute 80\% confidence intervals:
+The \code{madad} function has a range of options with respect to computational details; for example one can compute 80\% confidence intervals:
 <<eval=FALSE>>=
 madad(AuditC, level = 0.80)
 @
@@ -561,7 +561,7 @@ AIC(fit.smoking2)
 The lower AIC value indicates, that the fit of the second model is better.
 
 \section{Further development}
-In the future \pkg{mada} will support the mixture approach of \citet{holling2011likelihood}.
+In the future \pkg{mada} will support the mixture approach of \citet{holling2011likelihood} and Bayesian approaches.
 
 \section*{Acknowledgements}
 This work was funded by the DFG project HO 1286/7-2.
