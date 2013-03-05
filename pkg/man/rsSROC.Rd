@@ -6,10 +6,10 @@
 \concept{SROC curve}
 
 \title{
-Plot the Rücker-Schumacher (2010) SROC curve
+Plot the Ruecker-Schumacher (2010) SROC curve
 }
 \description{
-Assuming that a weighted Youden index is maximized in all primary studies, the Rücker-Schumacher approach estimates individual ROC curves and then averages them.
+Assuming that a weighted Youden index is maximized in all primary studies, the Ruecker-Schumacher approach estimates individual ROC curves and then averages them.
 }
 \usage{
 rsSROC(data = NULL, subset=NULL,
@@ -40,17 +40,17 @@ rsSROC(data = NULL, subset=NULL,
   \item{...}{arguments to be passed on to plotting functions.}
 }
 \details{
-Details are found in the paper of Rücker and Schumacher (2010).
+Details are found in the paper of Ruecker and Schumacher (2010).
 }
 \value{
 Besides plotting the SROC, an \code{\link{invisible}} list is returned which contains the parameters of the SROC.
 }
 \references{
-Rücker G., & Schumacher M. (2010) \dQuote{Summary ROC curve based on a weighted Youden index for selecting an optimal cutpoint in meta-analysis of diagnostic accuracy.} \emph{Statistics in Medicine}, \bold{29}, 3069--3078.
+Ruecker G., & Schumacher M. (2010) \dQuote{Summary ROC curve based on a weighted Youden index for selecting an optimal cutpoint in meta-analysis of diagnostic accuracy.} \emph{Statistics in Medicine}, \bold{29}, 3069--3078.
 }
 \author{
 Philipp Doebler <philipp.doebler@googlemail.com> 
-Original code kindly supplied by G. Rücker.
+Original code kindly supplied by G. Ruecker.
 }
 
 \seealso{
@@ -60,12 +60,14 @@ Original code kindly supplied by G. Rücker.
 ## First Example
 data(Dementia)
 ROCellipse(Dementia)
-mslSROC(Dementia, add = TRUE) # Add the MSL-SROC to this plot
+rsSROC(Dementia, add = TRUE) # Add the RS-SROC to this plot
 
 ## Second Example
-# Make a fancy plot and look at the coefficients
-msl_Dementia <- mslSROC(Dementia, col = 3, lwd = 3, lty = 3)
-msl_Dementia$A2 # intercept on logit SROC space
-msl_Dementia$B2 # slope on logit SROC space
+# Make a crowded plot and look at the coefficients
+rs_Dementia <- rsSROC(Dementia, col = 3, lwd = 3, lty = 3, 
+                      plotstudies = TRUE)
+rs_Dementia$lambda
+rs_Dementia$aa # intercepts of primary studies on logit ROC space
+rs_Dementia$bb # slopes 
 }
 
