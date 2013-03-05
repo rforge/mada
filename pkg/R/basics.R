@@ -1,3 +1,11 @@
+expit <- function(x){
+  (1+exp(-x))^(-1)
+}
+
+logit <- function(x){
+  log(x/(1-x))
+}
+
 
 CIrho <- function(rho, N, level = 0.95){
   stopifnot(rho < 1, rho > -1, N > 3, round(N) == N)

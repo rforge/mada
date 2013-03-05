@@ -1,22 +1,21 @@
-## MosesShapiroLittenberg
-mslSROC <- function(data = NULL, subset=NULL,
+## Rücker Schumacher
+rsSROC <- function(data = NULL, subset=NULL,
   TP="TP", FN="FN", FP="FP", TN="TN", 
-  fpr = NULL, extrapolate = FALSE, 
+  lambda = "from_bivariate",                  
+  fpr = NULL, extrapolate = FALSE, plotstudies = FALSE,
   correction = 0.5, correction.control = "all",
   add = FALSE, lty = 1, lwd = 1, col = 1, ...){
   
-  alphasens <- 1
-  alphafpr <- 1
   
   stopifnot(is.numeric(correction), 0 <= correction,  
             correction.control %in% c("all", "single", "none"),
-            0 <= alphasens, alphasens <= 2, 0 <= alphafpr, alphafpr <= 2,
             is.numeric(TP) | (is.character(TP) & length(TP) == 1),
             is.numeric(FP) | (is.character(FP) & length(FP) == 1),
             is.numeric(TN) | (is.character(TN) & length(TN) == 1),
             is.numeric(FN) | (is.character(FN) & length(FN) == 1),
-            is.logical(extrapolate))
-  
+            is.logical(extrapolate),
+            lambda == "from_bivariate" | 
+              (is.numeric(lambda) & length(lambda) == 1))
   
   if(!is.null(subset)){
     if(!is.null(data)){data <- data[subset,]}else{
@@ -62,41 +61,56 @@ mslSROC <- function(data = NULL, subset=NULL,
   
   number.of.pos <- TP + FN
   number.of.neg <- FP + TN
-  SENS<-TP/number.of.pos
-  FPR <- FP/number.of.neg
+  Se <-TP/number.of.pos
+  Sp <- 1 - FP/number.of.neg
   
   if(is.null(fpr)){
     fpr <- 1:99/100
     if(extrapolate){bound = c(0,1)}
-    if(!extrapolate){bound = c(min(FPR), max(FPR))}
+    if(!extrapolate){bound = c(min(1-Sp), max(1-Sp))}
     fpr <- fpr[cut(fpr,bound, "withinbound") == "withinbound"]  
   }  
-    
-  senstrafo <- function(x){return(mada:::talpha(alphasens)$linkfun(x))}
-  fprtrafo <- function(x){return(mada:::talpha(alphafpr)$linkfun(x))}
-  sensinvtrafo <- function(x){return(mada:::talpha(alphasens)$linkinv(x))}
+   
+  if(lambda == "from_bivariate"){
+    fit <- reitsma(data.frame(TP = round(TP), FP = round(FP),
+                              FN = round(FN), TN = round(TN)),
+                   correction = correction,
+                   correction.control = correction.control)  
+    Se0 <- expit(fit$coefficients[1,1])  
+    Sp0 <- 1-expit(fit$coefficients[1,2]) 
+    lambda <- Sp0*(1-Sp0)/(Sp0*(1-Sp0)+Se0*(1-Se0))
+  }
   
-  z <- fprtrafo(FPR)
-  y <- senstrafo(SENS)  
-  D <- y - z
-  S <- y + z
-  fit <- lm(D~S) 
-  A1 <- fit$coefficients[1]
-  B1 <- fit$coefficients[2]
-  A2 <-  A1/(1-B1)
-  B2  <- (1+B1)/(1-B1)
+  y <- logit(Se)
+  z <- logit(1-Sp)
+  
+  bb <- (1-lambda)*Sp*(1-Sp)/Se/(1-Se)/lambda
+  aa <- y-bb*z
+  
+  # The weights are the inverse variances of the log slope estimate
+  v.logbb <- 1/(TP) + 1/(FN) + 1/(TN) + 1/(FP)
+  w <- 1/v.logbb
+  beta2 <- exp(sum(w*log(bb))/sum(w))
+  alpha2 <- sum(w*(y-bb*z)/sum(w))
+  
+  sens <- expit(alpha2 + beta2*log(fpr/(1-fpr)))
 
-  sens <- sensinvtrafo(A2+B2*fprtrafo(fpr))
-  
   if(!add){plot(fpr, sens, type = "l", 
                 lty = lty, lwd = lwd, col = col, ...)
-           }else{
-             lines(fpr, sens, 
-                   lty = lty, lwd = lwd, col = col, ...)
-           }
+  }else{
+    lines(fpr, sens, 
+          lty = lty, lwd = lwd, col = col, ...)
+  }
   
-  return(invisible(list(fpr = fpr, sens = sens, A1 = A1, B1 = B1,
-                        A2 = A2, B2 = B2)))
+  if(plotstudies){
+    for(i in 1:length(bb)){
+      lines(fpr, expit(aa[i] + bb[i]*log(fpr/(1-fpr))))
+    }
+  }
+  
+  return(invisible(list(fpr = fpr, sens = sens, lambda = lambda,
+                        bb = bb, aa = aa, v.logbb = v.logbb,
+                        beta2 = beta2, alpha2 = alpha2)))
 }
 
 

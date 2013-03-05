@@ -20,6 +20,10 @@ export("spec")
 export("forest")
 export("talpha")
 export("SummaryPts")
+export("mslSROC")
+export("rsSROC")
+
+
 
 S3method(print, SummaryPts)
 S3method(summary, SummaryPts)
