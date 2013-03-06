@@ -24,6 +24,8 @@ madauni(x, type = "DOR", method = "DSL", suppress = TRUE, ...)
   \item{...}{further arguments to be passed on to \code{\link{madad}}, for example \code{correction.control}.}
 }
 \details{
+First note that the function \code{\link{madad}} is used to calculate effect measures. You can pass on arguments to this function via the \code{...} arguments. This is especially useful for the \code{correction.control} and \code{correction} arguments, see the example.
+
 The Mantel-Haenszel method performs fixed effect estimation of the effect sizes. For the DOR the variance of this estimator is calculated according to Robins et al. (1986) and for the likelihood ratios the variance is based on Greenland et al. (1985).
 
 The DerSimonian-Laird method performs a random effects meta-analysis. For this \eqn{\tau^2}{tau^2}, the variance of the log-transformed effect size (DOR, positive or negative likelihood ratio) is calculated by the DerSimonian and Laird (1986) method. The confidence interval for \eqn{\tau^2}{tau^2} is derived by inverting the Q-Test of Viechtbauer (2007).
@@ -54,6 +56,8 @@ Philipp Doebler <philipp.doebler@googlemail.com>
 }
 \note{
 Performing univariate meta-analysis of diagnostic studies can not be recommended anymore now that bivariate methods are available, at least not if a reasonable number of primary studies is availabel. The package \code{mada} provides this functionality for exploratory purposes and for meta-analysis of a small number of studies. The prefered way is to use \code{\link{reitsma}} in conjunction with \code{\link{SummaryPts}}.
+
+The default value of \code{correction.control} used \code{\link{madad}} (and hence in the calculation of the effect sizes for \code{madauni}) is \code{"all"}, i.e. the continuity correction is added to all studies if any has a zero cell. This is a different default value than the \code{metafor} package uses. Set \code{correction.control} to \code{"single"} to arrive at the same values. 
 }
 
 \seealso{
@@ -61,6 +65,17 @@ Performing univariate meta-analysis of diagnostic studies can not be recommended
 }
 \examples{
 data(AuditC)
+
+## First example: DOR meta-analysis
 AuditC.uni <- madauni(AuditC)
 summary(AuditC.uni)
+
+## Second example: sensitivity analysis
+## Do continuity corrections make a difference?
+AuditC.uni_low <- madauni(AuditC, correction = 0.1)
+AuditC.uni_single <-  madauni(AuditC, 
+          correction.control = "single") ## default is "all"
+confint(AuditC.uni)
+confint(AuditC.uni_low)
+confint(AuditC.uni_single)
 }
