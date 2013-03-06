@@ -82,14 +82,6 @@
 % And for further references please see RECENT JSS papers for detailed
 % documentation and examples. 
 % 
-% o Please make sure that all code/figures/tables/text are within the
-% margins of the manuscript
-% 
-% Please make sure that: 
-% 
-% Code:
-% Please make sure that all files needed to replicate the code/any examples within the manuscript are included in a standalone replication script.
-
 
 
 \begin{document}
