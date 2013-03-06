@@ -1,6 +1,6 @@
 \name{forest}
 \alias{forest}
-\alias{forest.default}
+\alias{forestmada}
 \alias{forest.madad}
 \alias{forest.madauni}
 
@@ -13,7 +13,6 @@ Forest plot for univariate measures
 Produce a forest plot. Includes graphical summary of results if applied to output of suitable model-fitting function. \code{forest} methods for \code{\link{madad}} and \code{\link{madauni}} objects are provided.
 }
 \usage{
-\method{forest}{default}(x, ...)
 \method{forest}{madad}(x, type = "sens", log = FALSE, ...)
 \method{forest}{madauni}(x, log = TRUE, ...)
 forestmada(x, ci, plotci = TRUE, main = "Forest plot", xlab = NULL,

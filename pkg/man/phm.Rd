@@ -15,18 +15,20 @@ Diagnostic Meta-Analysis with the proportional hazards model approach of Holling
 The function fits the model of Holling et al. (2012). The adjusted profile maximum likelihood estimator (APMLE) is implemented for homogeneity and heterogeneity of primary studies.
 }
 \usage{
-phm(x, ...)
-\method{phm}{default}(x=NULL, TP, FN, FP, TN, 
+phm(data, ...)
+\method{phm}{default}(data = NULL, subset=NULL, 
+    TP="TP", FN="FN", FP="FP", TN="TN",  
     correction = 0.5, correction.control = "all", 
     hetero = TRUE, estimator = "APMLE", l = 100, ...)
 }
 \arguments{
-\item{x}{any object that can be converted to a data frame with integer variables \code{TP}, \code{FN}, \code{FP} and \code{TN}, alternatively a matrix with column names including \code{TP}, \code{FN}, \code{FP} and \code{TN}.
+\item{data}{any object that can be converted to a data frame with integer variables \code{TP}, \code{FN}, \code{FP} and \code{TN}, alternatively a matrix with column names including \code{TP}, \code{FN}, \code{FP} and \code{TN}.
 }
-  \item{TP}{vector of integers, ingored if \code{X} is not \code{NULL}}
-  \item{FN}{vector of integers, ingored if \code{X} is not \code{NULL}}
-  \item{FP}{vector of integers, ingored if \code{X} is not \code{NULL}}
-  \item{TN}{vector of integers, ingored if \code{X} is not \code{NULL}}
+\item{subset}{the rows of \code{data} to be used as a subset in all calculations. If \code{NULL} (the default) then the complete data is considered.}  
+\item{TP}{character or integer: name for vector of integers that is a variable of \code{data} or a vector of integers. If \code{data} is not \code{NULL}, names are expected, otherwise integers are.}
+\item{FN}{character or integer: name for vector of integers that is a variable of \code{data} or a vector of integers. If \code{data} is not \code{NULL}, names are expected, otherwise integers are.}
+  \item{FP}{character or integer: name for vector of integers that is a variable of \code{data} or a vector of integers. If \code{data} is not \code{NULL}, names are expected, otherwise integers are.}
+  \item{TN}{character or integer: name for vector of integers that is a variable of \code{data} or a vector of integers. If \code{data} is not \code{NULL}, names are expected, otherwise integers are.}
   \item{correction}{numeric, continuity correction applied if zero cells}
   \item{correction.control}{character, if set to \code{"all"} (the default) the continuity correction is added to the whole data if only one cell in one study is zero. If set to \code{"single"} the correction is only applied to rows of the data which have a zero.}
   \item{hetero}{logical, should heterogeneity of studies be assumed? Will fit model for homogeneity otherwise.}
