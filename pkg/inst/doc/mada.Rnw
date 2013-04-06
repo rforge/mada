@@ -6,8 +6,8 @@
 % \usepackage{color,amsthm}
 % \usepackage{url}
 
-\documentclass[nojss]{jss}
-%\documentclass{jss}
+%\documentclass[nojss]{jss}
+\documentclass{jss}
 
 
 %% need no 

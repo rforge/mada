@@ -2,7 +2,7 @@ Package: mada
 Type: Package
 Title: Meta-Analysis of Diagnostic Accuracy (mada)
 Version: 0.5.4
-Date: 2013-11-02
+Date: 2013-04-06
 Author: Philipp Doebler
 Maintainer: Philipp Doebler <philipp.doebler@googlemail.com>
 Description: This package provides functions for diagnostic meta-analysis. Next to basic analysis and visualization the bivariate Model of Reitsma et al. (2005) that is equivalent to the HSROC of Rutter&Gatsonis (2001) can be fitted. A new approach based to diagnostic meta-analysis of Holling et al. (2012) is also available. Standard methods like summary, plot and so on are provided.
