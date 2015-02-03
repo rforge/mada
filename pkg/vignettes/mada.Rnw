@@ -1,5 +1,7 @@
 %\VignetteIndexEntry{Meta-Analysis of Diagnostic Accuracy with mada}
-%\VignetteKeyword{meta-analysis, diagnostic test}
+%\VignetteKeyword{meta-analysis}
+%\VignetteKeyword{diagnostic test}
+
 
 % \documentclass[a4paper]{article}
 % \usepackage{a4wide}
@@ -550,7 +552,7 @@ fit.smoking.ml.intercept <- reitsma(smoking,
                                     method = "ml")
 anova(fit.smoking.ml.type, fit.smoking.ml.intercept)
 @
-The 
+The meta-regression confirms that type explains some of the heterogeneity between the primary studies.
 
 \subsection{Transformations beyond the logit}
 All bivariate approaches explained so far use the conventional logit transformation. The \texttt{reitsma} function offers the parametric $t_\alpha$ family \citep{doebler2012mixed} of transformations as alternatives. The family is defined by
