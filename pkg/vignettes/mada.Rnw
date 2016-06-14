@@ -420,11 +420,11 @@ One typically assumes a binomial model conditional on a primary studies true sen
 
 Let $p_i$ and $u_i$ denote the $i$th study's true sensitivity and false positive rate respectively, and let $\hat p_i$ and $\hat u_i$ denote their estimates from the observed frequencies. Then, since a binomial model is assumed conditional on the true $p_i$, the variance of $\logit(\hat p_i)$ can be approximated\footnote{This uses the delta method.} by
 \[
-\frac{\hat p_i(1 - \hat p_i)}{m_i},
+\frac{1}{m_i \hat p_i(1 - \hat p_i)},
 \]
 and the variance of $\logit(\hat u_i)$ is then
 \[
-\frac{\hat u_i(1 - \hat u_i)}{n_i}.
+\frac{1}{n_i \hat u_i(1 - \hat u_i)}.
 \]
 So on the within study level one assumes, conditional on $p_i$ and $u_i$, that the observed variation is described by these variances and a normal model; let $D_i$ denote a diagonal 2$\times$2 matrix with the two variances on the diagonal. On the study level, one assumes that a global mean
 \[
